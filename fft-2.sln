@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30330.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fft-2", "fft-2\fft-2.csproj", "{835B6A8B-B712-49A3-A7CB-62893CC18303}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{F55A56F9-6E7B-417B-89DD-2C235105FB51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fft-server", "fft-server\fft-server.csproj", "{66A17D53-5FBA-4C8D-8E95-82A747122B78}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{835B6A8B-B712-49A3-A7CB-62893CC18303}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{835B6A8B-B712-49A3-A7CB-62893CC18303}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{835B6A8B-B712-49A3-A7CB-62893CC18303}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{835B6A8B-B712-49A3-A7CB-62893CC18303}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F55A56F9-6E7B-417B-89DD-2C235105FB51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F55A56F9-6E7B-417B-89DD-2C235105FB51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F55A56F9-6E7B-417B-89DD-2C235105FB51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F55A56F9-6E7B-417B-89DD-2C235105FB51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66A17D53-5FBA-4C8D-8E95-82A747122B78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66A17D53-5FBA-4C8D-8E95-82A747122B78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66A17D53-5FBA-4C8D-8E95-82A747122B78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66A17D53-5FBA-4C8D-8E95-82A747122B78}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2E99E399-F272-45AC-9068-454A69CB9FDC}
+	EndGlobalSection
+EndGlobal
