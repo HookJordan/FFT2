@@ -1,3 +1,4 @@
+using Common;
 using System;
 using System.Windows.Forms;
 
@@ -13,6 +14,8 @@ namespace fft_2
         [STAThread]
         static void Main()
         {
+            Logger.SetLogLevel(LogLevel.Info, true);
+
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

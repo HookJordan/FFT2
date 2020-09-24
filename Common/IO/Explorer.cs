@@ -45,8 +45,24 @@ namespace Common.IO
                     case PacketHeader.DirectoryGet:
                         GetDirectory(packet);
                         break;
+                    case PacketHeader.DirectoryCreate:
+                        CreateDirectory(packet);
+                        break;
+                    case PacketHeader.DirectoryMove:
+                        MoveDirectory(packet);
+                        break;
+                    case PacketHeader.DirectoryDelete:
+                        DeleteDirectory(packet);
+                        break;
                     default: // Unhandled packet
                         break;
+                }
+
+                // For generic actions, respond with same packet to confirm success
+                if (packet.PacketHeader != PacketHeader.DirectoryGet
+                    && packet.PacketHeader != PacketHeader.DrivesGet)
+                {
+                    client.Transmit(packet);
                 }
             }
             catch (Exception ex)
@@ -67,6 +83,39 @@ namespace Common.IO
         private bool IsProtected(string path, bool throwException = true)
         {
             return false;
+        }
+
+        private void CreateDirectory(Packet packet)
+        {
+            string fullPath = packet.PayloadAsString();
+
+            if (!IsProtected(fullPath))
+            {
+                Directory.CreateDirectory(fullPath);
+                Logger.Info($"Created new directory: {fullPath}");
+            }
+        }
+
+        private void MoveDirectory(Packet packet)
+        {
+            string[] data = listFromArray(packet.Payload);
+
+            if (!IsProtected(data[0]) && !IsProtected(data[1]))
+            {
+                Logger.Info($"Moving directory src={data[0]}, dst={data[1]}");
+                Directory.Move(data[0], data[1]);
+            }
+        }
+
+        private void DeleteDirectory(Packet packet)
+        {
+            string fullPath = packet.PayloadAsString();
+
+            if (!IsProtected(fullPath) && Directory.Exists(fullPath))
+            {
+                Logger.Info($"Deleting directory: {fullPath}");
+                Directory.Delete(fullPath, true);
+            }
         }
 
         private void GetDrives()
@@ -223,6 +272,25 @@ namespace Common.IO
                     {
                         _client.Transmit(p);
                     }
+                }
+            }
+        }
+
+        public static string[] listFromArray(byte[] data)
+        {
+            using (MemoryStream ms = new MemoryStream(data))
+            {
+                using (BinaryReader br = new BinaryReader(ms))
+                {
+                    int len = br.ReadInt32();
+                    string[] rtn = new string[len];
+
+                    for (int i = 0; i < len; i++)
+                    {
+                        rtn[i] = br.ReadString();
+                    }
+
+                    return rtn;
                 }
             }
         }

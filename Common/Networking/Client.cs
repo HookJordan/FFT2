@@ -225,8 +225,9 @@ namespace Common.Networking
             string protcol = $"Protocol={Enum.GetName(typeof(Protocol), Protocol)}";
             string ep = $"EndPoint={IP}:{Port}";
             string passw = $"Password={Password}";
+            string crypto = $"Encryption={Enum.GetName(typeof(CryptoServiceAlgorithm), _cryptoService.Algorithm)}";
 
-            return $"Client {{{ep}, {protcol}, {passw} }}";
+            return $"Client {{{ep}, {protcol}, {crypto}, {passw} }}";
         }
 
         public delegate void ReadyHandler(Client client);

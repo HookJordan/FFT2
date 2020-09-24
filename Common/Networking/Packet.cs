@@ -11,6 +11,13 @@ namespace Common.Networking
         Pong,
         DrivesGet,
         DirectoryGet,
+        DirectoryDelete,
+        DirectoryMove,
+        DirectoryCreate,
+        DirectoryCompress,
+        FileDelete,
+        FileMove,
+        FileCompress,
         Exception
     }
 

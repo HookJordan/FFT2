@@ -1,4 +1,5 @@
-﻿using Common.Networking;
+﻿using Common;
+using Common.Networking;
 using System;
 using System.Drawing;
 using System.IO;
@@ -61,6 +62,7 @@ namespace fft_2
                             case PacketHeader.DirectoryGet:
                                 bool resize = _drives;
                                 SetFileColumns();
+                                lstFiles.BeginUpdate();
 
                                 // Folders
                                 int rows = br.ReadInt32();
@@ -116,7 +118,8 @@ namespace fft_2
                                             Icon icon = IconReader.GetFileIcon(ex, IconReader.IconSize.Small, false);
                                             if (icon != null)
                                             {
-                                                lstIcons.Images.Add(icon);
+                                                Logger.Debug($"Adding icon for ext={ex}");
+                                                lstIcons.Images.Add(ex, icon);
                                                 item.ImageIndex = lstIcons.Images.Count - 1;
                                             }
                                         }
@@ -125,7 +128,21 @@ namespace fft_2
                                     lstFiles.Items.Add(item);
                                 }
                                 if (resize) lstFiles.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-
+                                lstFiles.Enabled = true;
+                                lstFiles.EndUpdate();
+                                break;
+                            case PacketHeader.DirectoryCreate:
+                            case PacketHeader.DirectoryDelete:
+                            case PacketHeader.DirectoryCompress:
+                            case PacketHeader.DirectoryMove:
+                            case PacketHeader.FileCompress:
+                            case PacketHeader.FileDelete:
+                            case PacketHeader.FileMove:
+                                lstFiles.Enabled = false;
+                                client.Transmit(new Packet(PacketHeader.DirectoryGet, currentPath));
+                                break;
+                            case PacketHeader.Exception:
+                                MessageBox.Show(packet.PayloadAsString(), "An error occured", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 lstFiles.Enabled = true;
                                 break;
                             default: // Unhandled packet
@@ -163,6 +180,79 @@ namespace fft_2
             // Setup Event handlers for form controls
             lstFiles.DoubleClick += LstFiles_DoubleClick;
             FormClosing += FrmFileExplorer_FormClosing;
+            mnuRefresh.Click += MnuRefresh_Click;
+
+            #region mnuEvents
+            mnuDirectoryCreate.Click += MnuDirectoryCreate_Click;
+            mnuDirectoryMove.Click += MnuDirectoryMove_Click;
+            mnuDirectoryDelete.Click += MnuDirectoryDelete_Click;
+            #endregion
+        }
+
+        private void MnuDirectoryDelete_Click(object sender, EventArgs e)
+        {
+            var item = lstFiles.SelectedItems[0];
+            if (MessageBox.Show("Are you sure you want to the following directory and all of it's contents?\n" + item.SubItems[1].Text, " Delete Directory", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                lstFiles.Enabled = false;
+                _client.Transmit(new Packet(PacketHeader.DirectoryDelete, item.SubItems[1].Text));
+            }
+        }
+
+        private void MnuDirectoryMove_Click(object sender, EventArgs e)
+        {
+            var item = lstFiles.SelectedItems[0];
+            string name = Prompt.InputBox($"Enter the new directory path\n{item.SubItems[1].Text}", "Move Directory", item.SubItems[1].Text);
+
+            if (name != "" && name != item.SubItems[1].Text)
+            {
+                byte[] data = ToByteArray(
+                    item.SubItems[1].Text,
+                     name
+                );
+
+                lstFiles.Enabled = false;
+                _client.Transmit(new Packet(PacketHeader.DirectoryMove, data));
+            }
+        }
+
+        public byte[] ToByteArray(params object[] obj)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (BinaryWriter bw = new BinaryWriter(ms))
+                {
+                    bw.Write(obj.Length);
+
+                    foreach (var o in obj)
+                    {
+                        bw.Write(o.ToString());
+                    }
+                }
+
+                return ms.ToArray();
+            }
+        }
+
+        private void MnuDirectoryCreate_Click(object sender, EventArgs e)
+        {
+            string name = Prompt.InputBox("Enter name of new directory", "Create Directory");
+
+            if (name != "")
+            {
+                lstFiles.Enabled = false;
+                _client.Transmit(new Packet(PacketHeader.DirectoryCreate, Path.Combine(currentPath, name)));
+            }
+        }
+
+        private void MnuRefresh_Click(object sender, EventArgs e)
+        {
+            lstFiles.Enabled = false;
+
+            if (currentPath.Length == 0)
+                _client.Transmit(new Packet(PacketHeader.DrivesGet));
+            else
+                _client.Transmit(new Packet(PacketHeader.DirectoryGet, currentPath));
         }
 
         private void FrmFileExplorer_FormClosing(object sender, FormClosingEventArgs e)
@@ -247,6 +337,50 @@ namespace fft_2
                 new ColumnHeader() { Text = "Created On" },
                 new ColumnHeader() { Text = "Last Modified" }
             });
+        }
+
+        private void mnuExplore_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Don't open when on drives
+            if (currentPath == "")
+                e.Cancel = true;
+            else
+            {
+                if (lstFiles.SelectedItems.Count == 0)
+                {
+                    mnuDirectoryMove.Enabled = false;
+                    mnuFileMove.Enabled = false;
+                    mnuDirectoryDelete.Enabled = false;
+                    mnuFileDelete.Enabled = false;
+                    mnuDirectoryCompress.Enabled = false;
+                    mnuFileCompress.Enabled = false;
+                }
+                else
+                {
+                    var type = (string)lstFiles.SelectedItems[0].Tag;
+
+                    if (type == "folder")
+                    {
+                        mnuDirectoryMove.Enabled = true;
+                        mnuDirectoryDelete.Enabled = true;
+                        mnuDirectoryCompress.Enabled = true;
+
+                        mnuFileMove.Enabled = false;
+                        mnuFileDelete.Enabled = false;
+                        mnuFileCompress.Enabled = false;
+                    }
+                    else
+                    {
+                        mnuDirectoryMove.Enabled = false;
+                        mnuDirectoryDelete.Enabled = false;
+                        mnuDirectoryCompress.Enabled = false;
+
+                        mnuFileMove.Enabled = true;
+                        mnuFileDelete.Enabled = true;
+                        mnuFileCompress.Enabled = true;
+                    }
+                }
+            }
         }
     }
 }
