@@ -1,8 +1,10 @@
 ﻿using Common;
+using Common.IO;
 using Common.Networking;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace fft_2
@@ -11,7 +13,8 @@ namespace fft_2
     {
         private bool _drives = true;
         private string currentPath = "";
-        private Client _client;
+        private Client _client, _transfer;
+        private FileTransferManager _fileTransferManager;
 
         public frmFileExplorer(Client client)
         {
@@ -157,6 +160,8 @@ namespace fft_2
         private void _client_Disconnected(Client client)
         {
             client.Dispose();
+
+            Close();
         }
 
         private void frmFileExplorer_Load(object sender, EventArgs e)
@@ -181,12 +186,282 @@ namespace fft_2
             lstFiles.DoubleClick += LstFiles_DoubleClick;
             FormClosing += FrmFileExplorer_FormClosing;
             mnuRefresh.Click += MnuRefresh_Click;
+            lstTransfers.ColumnWidthChanged += LstFiles_ColumnWidthChanged;
 
             #region mnuEvents
+            // Directory buttons
             mnuDirectoryCreate.Click += MnuDirectoryCreate_Click;
             mnuDirectoryMove.Click += MnuDirectoryMove_Click;
             mnuDirectoryDelete.Click += MnuDirectoryDelete_Click;
+            mnuDirectoryCompress.Click += MnuDirectoryCompress_Click;
+
+            // File Buttons
+            mnuFileCompress.Click += MnuFileCompress_Click;
+            mnuFileDelete.Click += MnuFileDelete_Click;
+            mnuFileMove.Click += MnuFileMove_Click;
+
+            // Transfer Buttons
+            mnuDownload.Click += MnuDownload_Click;
+            mnuUpload.Click += MnuUpload_Click;
+            mnuTransferPause.Click += MnuTransferPause_Click;
+            mnuTransferCancel.Click += MnuTransferCancel_Click;
             #endregion
+
+            // Create transfer socket 
+            Visible = false;
+
+            _transfer = new Client(Protocol.FFTST, _client.IP, _client.Port, _client.Password, _client.CryptoServiceAlgorithm);
+            _transfer.Ready += _transfer_Ready;
+            _transfer.Connect(Program.Configuration.MaxBufferSize);
+        }
+
+        private void LstFiles_ColumnWidthChanged(object sender, ColumnWidthChangedEventArgs e)
+        {
+            FixProgressBars();
+        }
+
+        private void MnuTransferCancel_Click(object sender, EventArgs e)
+        {
+            var transfer = lstTransfers.SelectedItems[0];
+            if (transfer.SubItems[1].Text != "Completed")
+            {
+                string msg = "Are you sure you want to cancel the following file transfer?\n\n";
+                msg += "Local path:\n" + transfer.SubItems[2].Text;
+                msg += "\n\nRemote path:\n" + transfer.SubItems[3].Text;
+
+                if (MessageBox.Show(msg, "Cancel " + transfer.SubItems[0].Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    _transfer.Transmit(new Packet(PacketHeader.FileTransferCancel, (string)transfer.Tag));
+                    CancelTransferItem(_fileTransferManager.FileTransfer[(string)transfer.Tag]);
+                }
+            }
+        }
+
+        private void MnuTransferPause_Click(object sender, EventArgs e)
+        {
+            var item = lstTransfers.SelectedItems[0];
+            var transfer = _fileTransferManager.FileTransfer[(string)item.Tag];
+
+            transfer.TogglePause();
+
+            // Resume the transfer
+            if (!transfer.Paused)
+            {
+                item.SubItems[1].Text = "In-Progress";
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (BinaryWriter bw = new BinaryWriter(ms))
+                    {
+                        bw.Write(transfer.TransferId);
+                        bw.Write(0);
+                    }
+
+                    _transfer.Transmit(new Packet(PacketHeader.FileTransferChunk, ms.ToArray()));
+                }
+
+            }
+            else
+            {
+                item.SubItems[1].Text = "Suspended";
+                item.SubItems[item.SubItems.Count - 1].Text = "-";
+            }
+        }
+
+        private void MnuUpload_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string local = ofd.FileName;
+                    string remote = Path.Combine(currentPath, Path.GetFileName(local));
+
+                    // Create session 
+                    FileTransfer transfer = new FileTransfer(local, remote, Program.Configuration.MaxBufferSize);
+                    _fileTransferManager.FileTransfer.Add(transfer.TransferId, transfer);
+
+                    // UI
+                    AddTransferItem(transfer);
+
+                    // Send packet to start
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        using (BinaryWriter bw = new BinaryWriter(ms))
+                        {
+                            bw.Write(remote);
+                            bw.Write(local);
+                            bw.Write(transfer.TransferId);
+                            bw.Write(transfer.FileLength.ToString());
+                        }
+
+                        _transfer.Transmit(new Packet(PacketHeader.FileTransferUpload, ms.ToArray()));
+                    }
+                }
+            }
+        }
+
+        private void MnuDownload_Click(object sender, EventArgs e)
+        {
+            var item = lstFiles.SelectedItems[0];
+
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                // Determine download type based on extension
+                string ext = Path.GetExtension(item.SubItems[1].Text);
+                sfd.Filter = $"(*{ext}|*{ext}";
+                sfd.FileName = item.Text;
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    string localPath = sfd.FileName;
+                    string remote = item.SubItems[1].Text;
+
+                    // Add file to transfer manager 
+                    FileTransfer transfer = new FileTransfer(localPath, remote, (long)item.SubItems[2].Tag, Program.Configuration.MaxBufferSize);
+                    _fileTransferManager.FileTransfer.Add(transfer.TransferId, transfer);
+
+                    AddTransferItem(transfer);
+
+                    // Send request to start to transfer socket? 
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        using (BinaryWriter bw = new BinaryWriter(ms))
+                        {
+                            bw.Write(remote);
+                            bw.Write(localPath);
+                            bw.Write(transfer.TransferId);
+                        }
+
+                        _transfer.Transmit(new Packet(PacketHeader.FileTransferDownload, ms.ToArray()));
+                    }
+                }
+            }
+        }
+
+        private void AddTransferItem(FileTransfer fileTransfer)
+        {
+            ListViewItem item = new ListViewItem(new string[]
+            {
+                fileTransfer.TransferType.ToString(),
+                "In-Progress",
+                fileTransfer.LocalFilePath,
+                fileTransfer.RemoteFilePath,
+                Explorer.GetSize(fileTransfer.FileLength),
+                "-",
+                "-",
+                ""
+            });
+
+            item.Tag = fileTransfer.TransferId;
+            lstTransfers.Items.Add(item);
+
+            ProgressBar progressBar = new ProgressBar();
+            progressBar.Maximum = 100;
+            progressBar.Minimum = 0;
+            progressBar.Value = 0;
+            progressBar.Tag = fileTransfer.TransferId;
+            progressBar.Parent = lstTransfers;
+            progressBar.Visible = true;
+
+            Rectangle r = item.SubItems[item.SubItems.Count - 1].Bounds;
+            progressBar.SetBounds(r.X, r.Y, r.Width, r.Height);
+
+            lstTransfers.Controls.Add(progressBar);
+        }
+
+        private void CancelTransferItem(FileTransfer fileTransfer)
+        {
+            ListViewItem item = lstTransfers.Items.Cast<ListViewItem>().FirstOrDefault(i => (string)i.Tag == fileTransfer.TransferId);
+            ProgressBar progressBar = lstTransfers.Controls.OfType<ProgressBar>().FirstOrDefault(i => (string)i.Tag == fileTransfer.TransferId);
+            progressBar.Visible = false;
+
+            item.SubItems[item.SubItems.Count - 3].Text = "-";
+            item.SubItems[item.SubItems.Count - 2].Text = "-";
+            item.SubItems[1].Text = "Cancelled";
+            item.ForeColor = Color.Red;
+        }
+
+        private void _transfer_Ready(Client client)
+        {
+            _fileTransferManager = new FileTransferManager(client, Program.Configuration.MaxBufferSize);
+            _fileTransferManager.UpdateTransfer += _fileTransferManager_UpdateTransfer;
+            Text += $" - Encryption: {client.CryptoServiceAlgorithm}";
+            Show();
+        }
+
+        private void FixProgressBars()
+        {
+            foreach (ListViewItem item in lstTransfers.Items)
+            {
+                Rectangle bounds = item.SubItems[item.SubItems.Count - 1].Bounds;
+                ProgressBar progressBar = lstTransfers.Controls.OfType<ProgressBar>().FirstOrDefault(i => (string)i.Tag == (string)item.Tag);
+
+                progressBar.SetBounds(bounds.X, bounds.Y, bounds.Width, bounds.Height);
+                progressBar.Visible = bounds.Y > 10;
+            }
+        }
+
+        private void _fileTransferManager_UpdateTransfer(FileTransferManager sender, FileTransfer fileTransfer)
+        {
+            Invoke((MethodInvoker)delegate
+            {
+                ListViewItem item = lstTransfers.Items.Cast<ListViewItem>().FirstOrDefault(i => (string)i.Tag == fileTransfer.TransferId);
+                ProgressBar progress = lstTransfers.Controls.OfType<ProgressBar>().FirstOrDefault(p => (string)p.Tag == fileTransfer.TransferId);
+
+                progress.Value = fileTransfer.CalculatePercentage();
+                item.SubItems[item.SubItems.Count - 3].Text = Explorer.GetSize(fileTransfer.Transferred());
+                item.SubItems[item.SubItems.Count - 2].Text = Explorer.GetSize(fileTransfer.BytesPerSecond);
+
+                if (!fileTransfer.Transfering)
+                {
+                    item.SubItems[1].Text = "Completed";
+                    item.ForeColor = Color.Green;
+                }
+            });
+        }
+
+        private void MnuFileMove_Click(object sender, EventArgs e)
+        {
+            var item = lstFiles.SelectedItems[0];
+            string name = Prompt.InputBox($"Please enter the new file path\n{item.SubItems[1].Text}", "Move File", item.SubItems[1].Text);
+
+            if (name != "" && name != item.SubItems[1].Text)
+            {
+                byte[] data = ToByteArray(
+                    item.SubItems[1].Text,
+                     name
+                );
+
+                lstFiles.Enabled = false;
+                _client.Transmit(new Packet(PacketHeader.FileMove, data));
+            }
+        }
+
+        private void MnuFileDelete_Click(object sender, EventArgs e)
+        {
+            var item = lstFiles.SelectedItems[0];
+            if (MessageBox.Show("Are you sure you want to the following file and all of it's contents?\n" + item.SubItems[1].Text, " Delete File", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                lstFiles.Enabled = false;
+                _client.Transmit(new Packet(PacketHeader.FileDelete, item.SubItems[1].Text));
+            }
+        }
+
+        private void MnuFileCompress_Click(object sender, EventArgs e)
+        {
+            var item = lstFiles.SelectedItems[0];
+            lstFiles.Enabled = false;
+
+            _client.Transmit(new Packet(PacketHeader.FileCompress, item.SubItems[1].Text));
+        }
+
+        private void MnuDirectoryCompress_Click(object sender, EventArgs e)
+        {
+            var item = lstFiles.SelectedItems[0];
+            lstFiles.Enabled = false;
+
+            _client.Transmit(new Packet(PacketHeader.DirectoryCompress, item.SubItems[1].Text));
         }
 
         private void MnuDirectoryDelete_Click(object sender, EventArgs e)
@@ -202,7 +477,7 @@ namespace fft_2
         private void MnuDirectoryMove_Click(object sender, EventArgs e)
         {
             var item = lstFiles.SelectedItems[0];
-            string name = Prompt.InputBox($"Enter the new directory path\n{item.SubItems[1].Text}", "Move Directory", item.SubItems[1].Text);
+            string name = Prompt.InputBox($"Please enter the new directory path\n{item.SubItems[1].Text}", "Move Directory", item.SubItems[1].Text);
 
             if (name != "" && name != item.SubItems[1].Text)
             {
@@ -236,7 +511,7 @@ namespace fft_2
 
         private void MnuDirectoryCreate_Click(object sender, EventArgs e)
         {
-            string name = Prompt.InputBox("Enter name of new directory", "Create Directory");
+            string name = Prompt.InputBox("Please enter the name of the new directory", "Create Directory");
 
             if (name != "")
             {
@@ -257,7 +532,17 @@ namespace fft_2
 
         private void FrmFileExplorer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _client.Disconnect();
+            if (_client.Connected)
+            {
+                if (MessageBox.Show("By closing this window you will be disconnecting your session which will cancel any pending file transfers. Are you sure you want to close the session?", "Close Session", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    _client.Disconnect();
+                }
+                else
+                {
+                    e.Cancel = true;
+                }
+            }
         }
 
         private void LstFiles_DoubleClick(object sender, EventArgs e)
@@ -339,6 +624,14 @@ namespace fft_2
             });
         }
 
+        private void mnuTransfers_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (lstTransfers.SelectedItems.Count == 0)
+            {
+                e.Cancel = true;
+            }
+        }
+
         private void mnuExplore_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             // Don't open when on drives
@@ -354,6 +647,8 @@ namespace fft_2
                     mnuFileDelete.Enabled = false;
                     mnuDirectoryCompress.Enabled = false;
                     mnuFileCompress.Enabled = false;
+                    mnuDownload.Enabled = false;
+                    mnuUpload.Enabled = true;
                 }
                 else
                 {
@@ -368,6 +663,9 @@ namespace fft_2
                         mnuFileMove.Enabled = false;
                         mnuFileDelete.Enabled = false;
                         mnuFileCompress.Enabled = false;
+
+                        mnuUpload.Enabled = false;
+                        mnuDownload.Enabled = false;
                     }
                     else
                     {
@@ -378,6 +676,9 @@ namespace fft_2
                         mnuFileMove.Enabled = true;
                         mnuFileDelete.Enabled = true;
                         mnuFileCompress.Enabled = true;
+
+                        mnuUpload.Enabled = true;
+                        mnuDownload.Enabled = true;
                     }
                 }
             }

@@ -13,15 +13,17 @@ namespace Common.Networking
         public bool Running { get; private set; }
         public int Port { get; private set; }
         public string Password { get; private set; }
+        public string PersonalPassword { get; private set; }
 
         private Socket _socket;
         
         private Server() { }
 
-        public Server(int port, string password)
+        public Server(int port, string password, string personal)
         {
             Port = port;
             SetPassword(password);
+            SetPersonalPassword(personal);
         }
 
         public void SetPassword(string password)
@@ -32,6 +34,16 @@ namespace Common.Networking
             }
 
             Password = password;
+        }
+
+        public void SetPersonalPassword(string password)
+        {
+            if (password.Length != 16)
+            {
+                password = Hashing.SHA(password);
+            }
+
+            PersonalPassword = password;
         }
 
         public void Listen()
@@ -97,10 +109,10 @@ namespace Common.Networking
                 byte protocol = req[0], enc = req[1], comp = req[2];
                 string password = Encoding.ASCII.GetString(req.Skip(3).ToArray());
 
-                if (password == Password)
+                if (password == Password || password == PersonalPassword)
                 {
                     Client c = new Client((Protocol)protocol, socket, password, (CryptoServiceAlgorithm)enc);
-                    Logger.Info($"New client {c}");
+                    Logger.Info($"New {c}");
                     SendResponse(socket, 1);
                     NewClient?.Invoke(this, c);
                 }
@@ -110,6 +122,11 @@ namespace Common.Networking
                     SendResponse(socket, 0);
                     socket.Dispose();
                 }
+            }
+            else if (rec == 1 && req[0] == 255)
+            {
+                // Check if client is online
+                Logger.Info($"Updated server status for {socket.RemoteEndPoint}");
             }
             else
             {

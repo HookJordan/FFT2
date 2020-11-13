@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -38,6 +40,7 @@
             this.txtMyIp = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStrip = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuBuddyList = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuPreferences = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuQuit = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,13 +55,21 @@
             this.label5 = new System.Windows.Forms.Label();
             this.txtPartnerIp = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.lblServerStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.icnMain = new System.Windows.Forms.NotifyIcon(this.components);
+            this.mnuIcon = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mnuIconOpen = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuIconCheckForUpdates = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuIconPreferences = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.mnuIconQuit = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numPartnerPort)).BeginInit();
-            this.statusStrip1.SuspendLayout();
+            this.statusStrip.SuspendLayout();
+            this.mnuIcon.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -158,12 +169,19 @@
             // fileToolStrip
             // 
             this.fileToolStrip.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuBuddyList,
             this.mnuPreferences,
             this.toolStripSeparator1,
             this.mnuQuit});
             this.fileToolStrip.Name = "fileToolStrip";
             this.fileToolStrip.Size = new System.Drawing.Size(37, 20);
             this.fileToolStrip.Text = "File";
+            // 
+            // mnuBuddyList
+            // 
+            this.mnuBuddyList.Name = "mnuBuddyList";
+            this.mnuBuddyList.Size = new System.Drawing.Size(135, 22);
+            this.mnuBuddyList.Text = "Buddy List";
             // 
             // mnuPreferences
             // 
@@ -297,38 +315,86 @@
             this.label4.TabIndex = 1;
             this.label4.Text = "IP Address:";
             // 
-            // statusStrip1
+            // statusStrip
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lblServerStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 226);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(624, 22);
-            this.statusStrip1.TabIndex = 2;
-            this.statusStrip1.Text = "statusStrip1";
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.lblStatus});
+            this.statusStrip.Location = new System.Drawing.Point(0, 226);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(624, 22);
+            this.statusStrip.TabIndex = 2;
+            this.statusStrip.Text = "statusStrip1";
             // 
-            // lblServerStatus
+            // lblStatus
             // 
-            this.lblServerStatus.Name = "lblServerStatus";
-            this.lblServerStatus.Size = new System.Drawing.Size(118, 17);
-            this.lblServerStatus.Text = "toolStripStatusLabel1";
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(118, 17);
+            this.lblStatus.Text = "toolStripStatusLabel1";
+            // 
+            // icnMain
+            // 
+            this.icnMain.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.icnMain.ContextMenuStrip = this.mnuIcon;
+            this.icnMain.Icon = ((System.Drawing.Icon)(resources.GetObject("icnMain.Icon")));
+            this.icnMain.Text = "FFT - FastFileTransfer";
+            this.icnMain.Visible = true;
+            // 
+            // mnuIcon
+            // 
+            this.mnuIcon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuIconOpen,
+            this.mnuIconCheckForUpdates,
+            this.mnuIconPreferences,
+            this.toolStripSeparator2,
+            this.mnuIconQuit});
+            this.mnuIcon.Name = "mnuIcon";
+            this.mnuIcon.Size = new System.Drawing.Size(171, 98);
+            // 
+            // mnuIconOpen
+            // 
+            this.mnuIconOpen.Name = "mnuIconOpen";
+            this.mnuIconOpen.Size = new System.Drawing.Size(170, 22);
+            this.mnuIconOpen.Text = "Open";
+            // 
+            // mnuIconCheckForUpdates
+            // 
+            this.mnuIconCheckForUpdates.Name = "mnuIconCheckForUpdates";
+            this.mnuIconCheckForUpdates.Size = new System.Drawing.Size(170, 22);
+            this.mnuIconCheckForUpdates.Text = "Check for updates";
+            // 
+            // mnuIconPreferences
+            // 
+            this.mnuIconPreferences.Name = "mnuIconPreferences";
+            this.mnuIconPreferences.Size = new System.Drawing.Size(170, 22);
+            this.mnuIconPreferences.Text = "Preferences";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(167, 6);
+            // 
+            // mnuIconQuit
+            // 
+            this.mnuIconQuit.Name = "mnuIconQuit";
+            this.mnuIconQuit.Size = new System.Drawing.Size(170, 22);
+            this.mnuIconQuit.Text = "Quit";
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(624, 248);
-            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.Name = "frmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FFT - FastFileTransfer 2.0.0";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -337,8 +403,9 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numPartnerPort)).EndInit();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
+            this.mnuIcon.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -355,7 +422,6 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStrip;
         private System.Windows.Forms.ToolStripMenuItem mnuPreferences;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.TextBox txtMyPort;
         private System.Windows.Forms.TextBox txtMyIp;
@@ -371,9 +437,18 @@
         private System.Windows.Forms.TextBox txtPartnerIp;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown numPartnerPort;
-        private System.Windows.Forms.ToolStripStatusLabel lblServerStatus;
         private System.Windows.Forms.ToolStripMenuItem mnuAbout;
         private System.Windows.Forms.ToolStripMenuItem mnuUpdates;
+        private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripStatusLabel lblStatus;
+        private System.Windows.Forms.ToolStripMenuItem mnuBuddyList;
+        private System.Windows.Forms.NotifyIcon icnMain;
+        private System.Windows.Forms.ContextMenuStrip mnuIcon;
+        private System.Windows.Forms.ToolStripMenuItem mnuIconOpen;
+        private System.Windows.Forms.ToolStripMenuItem mnuIconCheckForUpdates;
+        private System.Windows.Forms.ToolStripMenuItem mnuIconPreferences;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem mnuIconQuit;
     }
 }
 

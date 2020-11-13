@@ -20,9 +20,11 @@ namespace Common.Networking
         public int Port { get; private set; }
         public string Password { get; private set; }
         public bool Connected => _socket.Connected;
+        public CryptoServiceAlgorithm CryptoServiceAlgorithm => _cryptoService.Algorithm;
+        public bool IsDisposed { get; private set; }
 
         private Socket _socket;
-        private const int _bufferSize = 1024 * 1024; // Buffer size for packets (1MB)?
+        private long _bufferSize = 1024 * 1024; // Buffer size for packets (1MB)?
         private CryptoService _cryptoService;
 
         public Client(Protocol protocol, Socket socket, string password, CryptoServiceAlgorithm algorithm)
@@ -47,8 +49,9 @@ namespace Common.Networking
             _cryptoService = new CryptoService(algorithm, password);
         }
 
-        public void Connect()
+        public void Connect(long maxBufferSize)
         {
+            _bufferSize = maxBufferSize;
             try
             {
                 // Outbound connections
@@ -217,14 +220,18 @@ namespace Common.Networking
 
         public void Dispose()
         {
-            _socket.Dispose();
+            if (!IsDisposed)
+            {
+                IsDisposed = true;
+                _socket.Dispose();
+            }
         }
 
         public override string ToString()
         {
             string protcol = $"Protocol={Enum.GetName(typeof(Protocol), Protocol)}";
             string ep = $"EndPoint={IP}:{Port}";
-            string passw = $"Password={Password}";
+            string passw = $"Password={Password.Substring(0, 8)}...";
             string crypto = $"Encryption={Enum.GetName(typeof(CryptoServiceAlgorithm), _cryptoService.Algorithm)}";
 
             return $"Client {{{ep}, {protcol}, {crypto}, {passw} }}";

@@ -32,7 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmFileExplorer));
             this.label1 = new System.Windows.Forms.Label();
             this.txtNav = new System.Windows.Forms.TextBox();
-            this.lstFiles = new System.Windows.Forms.ListView();
+            this.lstFiles = new fft_2.FanceyListView();
             this.mnuExplore = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnuRefresh = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -47,8 +47,24 @@
             this.mnuFileDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuFileCompress = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.mnuDownload = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuUpload = new System.Windows.Forms.ToolStripMenuItem();
             this.lstIcons = new System.Windows.Forms.ImageList(this.components);
+            this.lstTransfers = new fft_2.FanceyListView();
+            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader6 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader7 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader8 = new System.Windows.Forms.ColumnHeader();
+            this.mnuTransfers = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mnuTransferPause = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuTransferCancel = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuExplore.SuspendLayout();
+            this.mnuTransfers.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -69,6 +85,7 @@
             // 
             // lstFiles
             // 
+            this.lstFiles.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.lstFiles.ContextMenuStrip = this.mnuExplore;
             this.lstFiles.FullRowSelect = true;
             this.lstFiles.HideSelection = false;
@@ -76,9 +93,9 @@
             this.lstFiles.Location = new System.Drawing.Point(12, 41);
             this.lstFiles.MultiSelect = false;
             this.lstFiles.Name = "lstFiles";
-            this.lstFiles.Size = new System.Drawing.Size(822, 567);
+            this.lstFiles.Size = new System.Drawing.Size(822, 370);
             this.lstFiles.SmallImageList = this.lstIcons;
-            this.lstFiles.TabIndex = 2;
+            this.lstFiles.TabIndex = 0;
             this.lstFiles.UseCompatibleStateImageBehavior = false;
             this.lstFiles.View = System.Windows.Forms.View.Details;
             // 
@@ -151,7 +168,10 @@
             this.mnuFileMove,
             this.mnuFileDelete,
             this.toolStripSeparator3,
-            this.mnuFileCompress});
+            this.mnuFileCompress,
+            this.toolStripSeparator4,
+            this.mnuDownload,
+            this.mnuUpload});
             this.mnuFile.Name = "mnuFile";
             this.mnuFile.Size = new System.Drawing.Size(122, 22);
             this.mnuFile.Text = "File";
@@ -159,25 +179,42 @@
             // mnuFileMove
             // 
             this.mnuFileMove.Name = "mnuFileMove";
-            this.mnuFileMove.Size = new System.Drawing.Size(127, 22);
+            this.mnuFileMove.Size = new System.Drawing.Size(128, 22);
             this.mnuFileMove.Text = "Move";
             // 
             // mnuFileDelete
             // 
             this.mnuFileDelete.Name = "mnuFileDelete";
-            this.mnuFileDelete.Size = new System.Drawing.Size(127, 22);
+            this.mnuFileDelete.Size = new System.Drawing.Size(128, 22);
             this.mnuFileDelete.Text = "Delete";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(124, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(125, 6);
             // 
             // mnuFileCompress
             // 
             this.mnuFileCompress.Name = "mnuFileCompress";
-            this.mnuFileCompress.Size = new System.Drawing.Size(127, 22);
+            this.mnuFileCompress.Size = new System.Drawing.Size(128, 22);
             this.mnuFileCompress.Text = "Compress";
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(125, 6);
+            // 
+            // mnuDownload
+            // 
+            this.mnuDownload.Name = "mnuDownload";
+            this.mnuDownload.Size = new System.Drawing.Size(128, 22);
+            this.mnuDownload.Text = "Download";
+            // 
+            // mnuUpload
+            // 
+            this.mnuUpload.Name = "mnuUpload";
+            this.mnuUpload.Size = new System.Drawing.Size(128, 22);
+            this.mnuUpload.Text = "Upload";
             // 
             // lstIcons
             // 
@@ -186,19 +223,107 @@
             this.lstIcons.TransparentColor = System.Drawing.Color.Transparent;
             this.lstIcons.Images.SetKeyName(0, "drive.png");
             // 
+            // lstTransfers
+            // 
+            this.lstTransfers.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lstTransfers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3,
+            this.columnHeader4,
+            this.columnHeader5,
+            this.columnHeader6,
+            this.columnHeader7,
+            this.columnHeader8});
+            this.lstTransfers.ContextMenuStrip = this.mnuTransfers;
+            this.lstTransfers.FullRowSelect = true;
+            this.lstTransfers.HideSelection = false;
+            this.lstTransfers.Location = new System.Drawing.Point(12, 417);
+            this.lstTransfers.MultiSelect = false;
+            this.lstTransfers.Name = "lstTransfers";
+            this.lstTransfers.Size = new System.Drawing.Size(822, 191);
+            this.lstTransfers.TabIndex = 2;
+            this.lstTransfers.UseCompatibleStateImageBehavior = false;
+            this.lstTransfers.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Type";
+            this.columnHeader1.Width = 66;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Status";
+            this.columnHeader2.Width = 105;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Local Path";
+            this.columnHeader3.Width = 124;
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Remote Path";
+            this.columnHeader4.Width = 124;
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "File Size";
+            this.columnHeader5.Width = 75;
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Sent";
+            this.columnHeader6.Width = 84;
+            // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "Speed (Sec)";
+            this.columnHeader7.Width = 84;
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "Progress";
+            this.columnHeader8.Width = 150;
+            // 
+            // mnuTransfers
+            // 
+            this.mnuTransfers.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuTransferPause,
+            this.mnuTransferCancel});
+            this.mnuTransfers.Name = "mnuTransfers";
+            this.mnuTransfers.Size = new System.Drawing.Size(167, 48);
+            this.mnuTransfers.Opening += new System.ComponentModel.CancelEventHandler(this.mnuTransfers_Opening);
+            // 
+            // mnuTransferPause
+            // 
+            this.mnuTransferPause.Name = "mnuTransferPause";
+            this.mnuTransferPause.Size = new System.Drawing.Size(166, 22);
+            this.mnuTransferPause.Text = "Suspend/Resume";
+            // 
+            // mnuTransferCancel
+            // 
+            this.mnuTransferCancel.Name = "mnuTransferCancel";
+            this.mnuTransferCancel.Size = new System.Drawing.Size(166, 22);
+            this.mnuTransferCancel.Text = "Cancel";
+            // 
             // frmFileExplorer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(846, 620);
+            this.Controls.Add(this.lstTransfers);
             this.Controls.Add(this.lstFiles);
             this.Controls.Add(this.txtNav);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "frmFileExplorer";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "frmFileExplorer";
             this.Load += new System.EventHandler(this.frmFileExplorer_Load);
             this.mnuExplore.ResumeLayout(false);
+            this.mnuTransfers.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -208,7 +333,6 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtNav;
-        private System.Windows.Forms.ListView lstFiles;
         private System.Windows.Forms.ImageList lstIcons;
         private System.Windows.Forms.ContextMenuStrip mnuExplore;
         private System.Windows.Forms.ToolStripMenuItem mnuRefresh;
@@ -224,5 +348,21 @@
         private System.Windows.Forms.ToolStripMenuItem mnuFileDelete;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem mnuFileCompress;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem mnuDownload;
+        private System.Windows.Forms.ToolStripMenuItem mnuUpload;
+        private FanceyListView lstFiles;
+        private FanceyListView lstTransfers;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.ColumnHeader columnHeader7;
+        private System.Windows.Forms.ColumnHeader columnHeader8;
+        private System.Windows.Forms.ContextMenuStrip mnuTransfers;
+        private System.Windows.Forms.ToolStripMenuItem mnuTransferPause;
+        private System.Windows.Forms.ToolStripMenuItem mnuTransferCancel;
     }
 }
