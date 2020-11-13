@@ -1,0 +1,12 @@
+{
+  "Port": 15056,
+  "MaxBufferSize": 1048576,
+  "CryptoServiceAlgorithm": 1,
+  "LogLevel": 3,
+  "ProtectedDirectories": [
+    "Z:\\",
+    "C:\\"
+  ],
+  "Password": "AAAbbb###123",
+  "StartWithWindows": false
+}
