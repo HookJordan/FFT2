@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -10,8 +11,10 @@ namespace Common.IO
     public class Explorer
     {
         private Client _client;
-        private string directorySplit = "";
-        public Explorer(Client client)
+        private string[] _protectedDirectories;
+        private static char directorySplit;
+        private static char oppositeSplit;
+        public Explorer(Client client, string[] protectedDirectories)
         {
             _client = client;
 
@@ -20,12 +23,16 @@ namespace Common.IO
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                directorySplit = "\\";
+                directorySplit = '\\';
+                oppositeSplit = '/';
             }
             else
             {
-                directorySplit = "/";
+                directorySplit = '/';
+                oppositeSplit = '\\';
             }
+
+            _protectedDirectories = protectedDirectories;
         }
 
         private void _client_Disconnected(Client client)
@@ -54,6 +61,18 @@ namespace Common.IO
                     case PacketHeader.DirectoryDelete:
                         DeleteDirectory(packet);
                         break;
+                    case PacketHeader.DirectoryCompress:
+                        CompressDirectory(packet);
+                        break;
+                    case PacketHeader.FileDelete:
+                        DeleteFile(packet);
+                        break;
+                    case PacketHeader.FileCompress:
+                        CompressFile(packet);
+                        break;
+                    case PacketHeader.FileMove:
+                        MoveFile(packet);
+                        break;
                     default: // Unhandled packet
                         break;
                 }
@@ -72,6 +91,13 @@ namespace Common.IO
             }
         }
 
+        public static string FixPath(string path)
+        {
+            string fix = path.Replace(oppositeSplit, directorySplit);
+            Logger.Debug($"Fixing path: orig={path}, fix={fix}");
+            return fix;
+        }
+
         private void SendException(Exception ex)
         {
             using (Packet p = new Packet(PacketHeader.Exception, ex.Message))
@@ -82,12 +108,19 @@ namespace Common.IO
 
         private bool IsProtected(string path, bool throwException = true)
         {
-            return false;
+            var find = _protectedDirectories.FirstOrDefault(d => path.ToLower().StartsWith(d.ToLower()));
+
+            if (find != null && throwException)
+            {
+                throw new Exception($"Access denied! '{path}' is a protected directory.");
+            }
+
+            return find != null;
         }
 
         private void CreateDirectory(Packet packet)
         {
-            string fullPath = packet.PayloadAsString();
+            string fullPath = FixPath(packet.PayloadAsString());
 
             if (!IsProtected(fullPath))
             {
@@ -109,12 +142,86 @@ namespace Common.IO
 
         private void DeleteDirectory(Packet packet)
         {
-            string fullPath = packet.PayloadAsString();
+            string fullPath = FixPath(packet.PayloadAsString());
 
             if (!IsProtected(fullPath) && Directory.Exists(fullPath))
             {
                 Logger.Info($"Deleting directory: {fullPath}");
                 Directory.Delete(fullPath, true);
+            }
+        }
+
+        private void CompressDirectory(Packet packet)
+        {
+            string fullPath = FixPath(packet.PayloadAsString());
+
+            if (!IsProtected(fullPath) && Directory.Exists(fullPath))
+            {
+                try
+                {
+                    Logger.Info($"Compressing directory src={fullPath}, dst={fullPath}.zip");
+                    ZipFile.CreateFromDirectory(fullPath, $"{fullPath}.zip", CompressionLevel.Fastest, true);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"An error occured while compressing {fullPath}");
+                    Logger.Debug(ex.Message);
+
+                    if (File.Exists($"{fullPath}.zip"))
+                        File.Delete($"{fullPath}.zip");
+                    throw ex;
+                }
+            }
+        }
+
+        private void DeleteFile(Packet packet)
+        {
+            string fullPath = FixPath(packet.PayloadAsString());
+
+            if (!IsProtected(fullPath) && File.Exists(fullPath))
+            {
+                Logger.Info($"Deleting file: {fullPath}");
+                File.Delete(fullPath);
+            }
+        }
+
+        private void MoveFile(Packet packet)
+        {
+            string[] data = listFromArray(packet.Payload);
+
+            if (!IsProtected(data[0]) && !IsProtected(data[1]))
+            {
+                Logger.Info($"Moving file src={data[0]}, dst={data[1]}");
+                Directory.Move(data[0], data[1]);
+            }
+        }
+
+        private void CompressFile(Packet packet)
+        {
+            string fullPath = FixPath(packet.PayloadAsString());
+
+            if (!IsProtected(fullPath))
+            {
+                try
+                {
+                    Logger.Info($"Compressing file src={fullPath}, dst={fullPath}.zip");
+                    using (FileStream fs = new FileStream($"{fullPath}.zip", FileMode.Create))
+                    {
+                        using (ZipArchive zip = new ZipArchive(fs, ZipArchiveMode.Create))
+                        {
+                            zip.CreateEntryFromFile(fullPath, Path.GetFileName(fullPath));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"An error occured while compressing {fullPath}");
+                    Logger.Debug(ex.Message);
+
+                    if (File.Exists($"{fullPath}.zip"))
+                        File.Delete($"{fullPath}.zip");
+                    throw ex;
+                }
             }
         }
 
@@ -213,8 +320,8 @@ namespace Common.IO
                                     di.Name+ isProt,
                                     di.FullName,
                                     di.GetFiles().Length + " FILES" ,
-                                    di.CreationTime.ToString("dd/MM/yyyy HH:ss"),
-                                    di.LastAccessTime.ToString("dd/MM/yyyy HH:ss")
+                                    di.CreationTime.ToString("dd/MM/yyyy hh:mm:ss tt"),
+                                    di.LastAccessTime.ToString("dd/MM/yyyy hh:mm:ss tt")
                                 });
                             }
                             catch (Exception e)
@@ -246,8 +353,8 @@ namespace Common.IO
                                     fi.Name,
                                     fi.FullName,
                                     GetSize((double)fi.Length),
-                                    fi.CreationTime.ToString("dd/MM/yyyy HH:ss"),
-                                    fi.LastAccessTime.ToString("dd/MM/yyyy HH:ss"),
+                                    fi.CreationTime.ToString("dd/MM/yyyy hh:mm:ss tt"),
+                                    fi.LastAccessTime.ToString("dd/MM/yyyy hh:mm:ss tt"),
                                     fi.Length.ToString()
                                 });
                             }
@@ -276,7 +383,7 @@ namespace Common.IO
             }
         }
 
-        public static string[] listFromArray(byte[] data)
+        public string[] listFromArray(byte[] data)
         {
             using (MemoryStream ms = new MemoryStream(data))
             {
@@ -288,6 +395,7 @@ namespace Common.IO
                     for (int i = 0; i < len; i++)
                     {
                         rtn[i] = br.ReadString();
+                        rtn[i] = FixPath(rtn[i]);
                     }
 
                     return rtn;
@@ -299,20 +407,25 @@ namespace Common.IO
         {
             string rtn;
             rtn = string.Format("{0:0} bytes", size);
-            if (size > 100)
+            if (size > 1000)
             {
-                size /= 1024; //kb
+                size /= 1024; // KB
                 rtn = string.Format("{0:0.00} KB", size);
             }
-            if (size > 100)
+            if (size > 1000)
             {
-                size /= 1024; //mb
+                size /= 1024; // MB
                 rtn = string.Format("{0:0.00} MB", size);
             }
             if (size > 1000)
             {
-                size /= 1024; // gb
+                size /= 1024; // GB
                 rtn = string.Format("{0:0.00} GB", size);
+            }
+            if (size > 1000)
+            {
+                size /= 1024; // TB
+                rtn = string.Format("{0:0.00} TB", size);
             }
             return rtn;
         }

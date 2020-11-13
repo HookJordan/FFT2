@@ -6,6 +6,7 @@ namespace fft_2
 {
     static class Program
     {
+        public static Configuration Configuration = Configuration.FromFile("config.json", true);
         public static string APP_VERSION = "2.0.0";
 
         /// <summary>
@@ -14,7 +15,7 @@ namespace fft_2
         [STAThread]
         static void Main()
         {
-            Logger.SetLogLevel(LogLevel.Info, true);
+            Logger.SetLogLevel(LogLevel.Debug, true);
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();

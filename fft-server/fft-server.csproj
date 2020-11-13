@@ -4,6 +4,9 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>fft_server</RootNamespace>
+
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <OutDir>$(SolutionDir)/../bin/cli-server</OutDir>
   </PropertyGroup>
 
   <ItemGroup>

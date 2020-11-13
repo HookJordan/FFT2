@@ -18,6 +18,11 @@ namespace Common.Networking
         FileDelete,
         FileMove,
         FileCompress,
+        FileTransferDownload,
+        FileTransferUpload,
+        FileTransferChunk,
+        FileTransferCancel,
+        FileTransferCancelConfirm,
         Exception
     }
 
