@@ -74,7 +74,7 @@ namespace fft_2
             mnuUpdates.Click += MnuUpdates_Click;
 
             // Initial launch update check
-            UpdateCheck(false); // TODO: SET TO FALSE
+            UpdateCheck(false);
         }
 
         private void MnuIconCheckForUpdates_Click(object sender, EventArgs e)
@@ -315,10 +315,9 @@ namespace fft_2
             // Determine is target version is > current version
             if (_updater.IsNewVersion(Program.APP_VERSION, update.version))
             {
-                // TODO: Downloader
                 if (MessageBox.Show($"A newer version of FastFileTransfer has been found. Would you like to download version: {update.version}?", "Checking For Updates", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    // TODO: SHOW GATE UNTIL DOWNLOAD COMPELTED
+                    // SHOW GATE UNTIL DOWNLOAD COMPELTED
                     string targetFile = System.IO.Path.Combine(Application.StartupPath, update.package.Replace("apps/", ""));
                     string message = $"Current Version: {Program.APP_VERSION}\nTarget Version: {update.version}\n\nDestination:\n{targetFile}";
 
@@ -334,6 +333,9 @@ namespace fft_2
                             }
 
                             dlg.CloseDialog();
+
+                            // TODO: It would be nice to extract and auto install the updates
+                            // However, we will need to write or utilize an installation wizard
                             MessageBox.Show($"The updated package has been downloaded to:\n\n{targetFile}\n\nPlease extract it to complete the update!", "Update Downloaded", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                     }

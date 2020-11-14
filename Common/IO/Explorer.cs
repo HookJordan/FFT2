@@ -19,7 +19,6 @@ namespace Common.IO
             _client = client;
 
             _client.PacketReceived += _client_PacketReceived;
-            _client.Disconnected += _client_Disconnected;
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -33,11 +32,6 @@ namespace Common.IO
             }
 
             _protectedDirectories = protectedDirectories;
-        }
-
-        private void _client_Disconnected(Client client)
-        {
-            // TODO: Cancel all transfers?
         }
 
         private void _client_PacketReceived(Client client, Packet packet)

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace fft_2
@@ -41,7 +37,7 @@ namespace fft_2
         {
             foreach (var item in lstBuddy.Items)
             {
-
+                // TODO: status check with the pinger
             }
         }
     }

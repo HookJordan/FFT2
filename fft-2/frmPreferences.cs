@@ -60,7 +60,7 @@ namespace fft_2
         {
             if (DialogResult == DialogResult.OK)
             {
-                // TODO: Copy values into Program.Configuration
+                // Copy values into Program.Configuration
                 Program.Configuration.MaxBufferSize = (long)numBuffer.Value * 1024;
                 Program.Configuration.Port = (int)numPort.Value;
                 Program.Configuration.Password = txtPassword.Text;
@@ -83,6 +83,7 @@ namespace fft_2
                     }
                 }
 
+                // Persist
                 Program.Configuration.Save("config.json", true);
             }
         }
@@ -94,7 +95,6 @@ namespace fft_2
 
         private void btnConfirm_Click(object sender, EventArgs e)
         {
-            // TODO: Validate
             DialogResult = DialogResult.OK;
         }
 
