@@ -7,7 +7,7 @@ namespace fft_2
     static class Program
     {
         public static Configuration Configuration = Configuration.FromFile("config.json", true);
-        public static string APP_VERSION = "2.0.0";
+        public static string APP_VERSION = "2.0.2"; // TODO: Reminder to update this on each build
 
         /// <summary>
         ///  The main entry point for the application.

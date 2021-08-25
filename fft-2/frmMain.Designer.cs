@@ -42,6 +42,7 @@
             this.fileToolStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuBuddyList = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuPreferences = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuLogger = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuQuit = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStrip = new System.Windows.Forms.ToolStripMenuItem();
@@ -171,6 +172,7 @@
             this.fileToolStrip.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuBuddyList,
             this.mnuPreferences,
+            this.mnuLogger,
             this.toolStripSeparator1,
             this.mnuQuit});
             this.fileToolStrip.Name = "fileToolStrip";
@@ -188,6 +190,12 @@
             this.mnuPreferences.Name = "mnuPreferences";
             this.mnuPreferences.Size = new System.Drawing.Size(135, 22);
             this.mnuPreferences.Text = "Preferences";
+            // 
+            // mnuLogger
+            // 
+            this.mnuLogger.Name = "mnuLogger";
+            this.mnuLogger.Size = new System.Drawing.Size(135, 22);
+            this.mnuLogger.Text = "Show Logs";
             // 
             // toolStripSeparator1
             // 
@@ -449,6 +457,7 @@
         private System.Windows.Forms.ToolStripMenuItem mnuIconPreferences;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem mnuIconQuit;
+        private System.Windows.Forms.ToolStripMenuItem mnuLogger;
     }
 }
 

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Common
 {
-
     public enum LogLevel
     {
         Error = 1,
@@ -64,12 +61,14 @@ namespace Common
             if (Get.LogLevel > LogLevel.Error)
             {
                 Get.WriteLine($"[INFO] {msg}");
+                Get.InfoLog?.Invoke(Get, $"[INFO] {msg}");
             }
         }
 
         public static void Error(string msg)
         {
             Get.WriteLine($"[ERROR] {msg}");
+            Get.ErrorLog?.Invoke(Get, $"[ERROR] {msg}");
         }
 
         public static void Debug(string msg)
@@ -77,6 +76,7 @@ namespace Common
             if (Get.LogLevel == LogLevel.Debug)
             {
                 Get.WriteLine($"[DEBUG] {msg}");
+                Get.DebugLog?.Invoke(Get, $"[DEBUG] {msg}");
             }
         }
 
@@ -91,7 +91,7 @@ namespace Common
 
                     if (ConsoleLogging)
                     {
-                        Console.WriteLine(log);
+                        Console.WriteLine(msg.Substring(msg.IndexOf(']') + 2));
                     }
                 }
             }
@@ -109,5 +109,12 @@ namespace Common
                 _streamWriter.Dispose();
             }
         }
+
+        public delegate void ErrorLogHandler(Logger logger, string log);
+        public event ErrorLogHandler ErrorLog;
+        public delegate void InfoLogHandler(Logger logger, string log);
+        public event InfoLogHandler InfoLog;
+        public delegate void DebugLogHandler(Logger logger, string log);
+        public event DebugLogHandler DebugLog;
     }
 }
