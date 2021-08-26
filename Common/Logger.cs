@@ -6,8 +6,8 @@ namespace Common
     public enum LogLevel
     {
         Error = 1,
-        Info,
-        Debug
+        Info = 2,
+        Debug = 3
     }
 
     public class Logger : IDisposable

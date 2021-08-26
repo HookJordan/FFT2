@@ -50,6 +50,7 @@ namespace fft_2
             this.Name = "frmConnectionLogger";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "frmConnectionLogger";
+            this.Load += new System.EventHandler(this.frmConnectionLogger_Load);
             this.ResumeLayout(false);
 
         }

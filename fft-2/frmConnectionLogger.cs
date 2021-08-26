@@ -71,7 +71,7 @@ namespace fft_2
         public void WriteText(string text)
         {
             // Invoke is required as we will be updating from a different thread
-            if (InvokeRequired)
+            if (rtxtLog.InvokeRequired)
             {
                 Action safeWrite = delegate { WriteText(text); };
                 rtxtLog?.BeginInvoke(safeWrite);
@@ -80,6 +80,11 @@ namespace fft_2
             {
                 rtxtLog.AppendText(text + Environment.NewLine);
             }
+        }
+
+        private void frmConnectionLogger_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
