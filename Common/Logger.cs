@@ -38,6 +38,7 @@ namespace Common
         private Logger()
         {
             LogLevel = LogLevel.Info;
+            ConsoleLogging = false;
             _logLock = new object();
             FileName = $"logs/{DateTime.Now:yyyy-MM-dd}.txt";
 
@@ -93,6 +94,8 @@ namespace Common
                     {
                         Console.WriteLine(msg.Substring(msg.IndexOf(']') + 2));
                     }
+
+                    WriteLineEvent?.Invoke(this, log);
                 }
             }
             else
@@ -116,5 +119,8 @@ namespace Common
         public event InfoLogHandler InfoLog;
         public delegate void DebugLogHandler(Logger logger, string log);
         public event DebugLogHandler DebugLog;
+
+        public delegate void WriteLineHandler(Logger logger, string line);
+        public event WriteLineHandler WriteLineEvent;
     }
 }

@@ -19,9 +19,7 @@ namespace fft_2
             Text = $"FFT - Logs";
 
             // Handle log events
-            Logger.Get.InfoLog += HandleLogs;
-            Logger.Get.ErrorLog += HandleLogs;
-            Logger.Get.DebugLog += HandleLogs;
+            Logger.Get.WriteLineEvent += HandleLogs;
         }
 
         private void FrmConnectionLogger_FormClosing(object sender, FormClosingEventArgs e)

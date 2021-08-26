@@ -15,7 +15,7 @@ namespace fft_2
         [STAThread]
         static void Main()
         {
-            Logger.SetLogLevel(LogLevel.Info, true);
+            Logger.SetLogLevel(Configuration.LogLevel);
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();

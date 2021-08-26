@@ -68,6 +68,9 @@ namespace fft_2
                 Program.Configuration.LogLevel = cbDebug.Checked ? Common.LogLevel.Debug : Common.LogLevel.Info;
                 Program.Configuration.ProtectedDirectories = lstProtected.Items.Cast<string>().ToList();
 
+                // Update the logger instance
+                Common.Logger.SetLogLevel(Program.Configuration.LogLevel);
+
                 if (Program.Configuration.StartWithWindows != cbWindows.Checked)
                 {
                     using (var install = new Installation.Startup("FastFileTransfer", Application.ExecutablePath))
