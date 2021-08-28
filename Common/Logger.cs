@@ -104,6 +104,13 @@ namespace Common
             }
         }
 
+        public string GetLogsFolder()
+        {
+            FileInfo info = new FileInfo(FileName);
+
+            return info.Directory.FullName;
+        }
+
         public void Dispose()
         {
             if (!_disposed)

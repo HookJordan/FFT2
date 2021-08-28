@@ -84,5 +84,29 @@ namespace fft_2
         {
 
         }
+
+        private void openLogFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Logger.Get.GetLogsFolder());
+        }
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.Filter = ".txt|*.txt";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    System.IO.File.WriteAllText(sfd.FileName, rtxtLog.Text);
+
+                    MessageBox.Show($"Your logs have been saved to the file:\n\n{sfd.FileName}", "Export Logs", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            rtxtLog.Clear();
+        }
     }
 }
