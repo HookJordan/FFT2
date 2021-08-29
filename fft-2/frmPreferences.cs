@@ -68,6 +68,9 @@ namespace fft_2
                 Program.Configuration.LogLevel = cbDebug.Checked ? Common.LogLevel.Debug : Common.LogLevel.Info;
                 Program.Configuration.ProtectedDirectories = lstProtected.Items.Cast<string>().ToList();
 
+                // Update the logger instance
+                Common.Logger.SetLogLevel(Program.Configuration.LogLevel);
+
                 if (Program.Configuration.StartWithWindows != cbWindows.Checked)
                 {
                     using (var install = new Installation.Startup("FastFileTransfer", Application.ExecutablePath))
@@ -116,6 +119,8 @@ namespace fft_2
                 return CryptoServiceAlgorithm.RC4;
             else if (radEncXOR.Checked)
                 return CryptoServiceAlgorithm.XOR;
+            else if (radDES.Checked)
+                return CryptoServiceAlgorithm.DES;
             else
                 return CryptoServiceAlgorithm.Disabled;
         }
@@ -128,6 +133,8 @@ namespace fft_2
                 radEncRC4.Checked = true;
             else if (alg == CryptoServiceAlgorithm.XOR)
                 radEncXOR.Checked = true;
+            else if (alg == CryptoServiceAlgorithm.DES)
+                radDES.Checked = true;
             else
                 radEncNone.Checked = true;
         }

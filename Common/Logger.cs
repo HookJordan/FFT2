@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Common
 {
-
     public enum LogLevel
     {
         Error = 1,
-        Info,
-        Debug
+        Info = 2,
+        Debug = 3
     }
 
     public class Logger : IDisposable
@@ -41,6 +38,7 @@ namespace Common
         private Logger()
         {
             LogLevel = LogLevel.Info;
+            ConsoleLogging = false;
             _logLock = new object();
             FileName = $"logs/{DateTime.Now:yyyy-MM-dd}.txt";
 
@@ -64,12 +62,14 @@ namespace Common
             if (Get.LogLevel > LogLevel.Error)
             {
                 Get.WriteLine($"[INFO] {msg}");
+                Get.InfoLog?.Invoke(Get, $"[INFO] {msg}");
             }
         }
 
         public static void Error(string msg)
         {
             Get.WriteLine($"[ERROR] {msg}");
+            Get.ErrorLog?.Invoke(Get, $"[ERROR] {msg}");
         }
 
         public static void Debug(string msg)
@@ -77,6 +77,7 @@ namespace Common
             if (Get.LogLevel == LogLevel.Debug)
             {
                 Get.WriteLine($"[DEBUG] {msg}");
+                Get.DebugLog?.Invoke(Get, $"[DEBUG] {msg}");
             }
         }
 
@@ -91,14 +92,23 @@ namespace Common
 
                     if (ConsoleLogging)
                     {
-                        Console.WriteLine(log);
+                        Console.WriteLine(msg.Substring(msg.IndexOf(']') + 2));
                     }
+
+                    WriteLineEvent?.Invoke(this, log);
                 }
             }
             else
             {
                 throw new Exception("Cannot write to a disposed logger instance");
             }
+        }
+
+        public string GetLogsFolder()
+        {
+            FileInfo info = new FileInfo(FileName);
+
+            return info.Directory.FullName;
         }
 
         public void Dispose()
@@ -109,5 +119,15 @@ namespace Common
                 _streamWriter.Dispose();
             }
         }
+
+        public delegate void ErrorLogHandler(Logger logger, string log);
+        public event ErrorLogHandler ErrorLog;
+        public delegate void InfoLogHandler(Logger logger, string log);
+        public event InfoLogHandler InfoLog;
+        public delegate void DebugLogHandler(Logger logger, string log);
+        public event DebugLogHandler DebugLog;
+
+        public delegate void WriteLineHandler(Logger logger, string line);
+        public event WriteLineHandler WriteLineEvent;
     }
 }

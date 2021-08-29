@@ -112,15 +112,15 @@ namespace Common.Networking
                 if (password == Password || password == PersonalPassword)
                 {
                     Client c = new Client((Protocol)protocol, socket, password, (CryptoServiceAlgorithm)enc);
-                    Logger.Info($"New {c}");
                     SendResponse(socket, 1);
                     NewClient?.Invoke(this, c);
+                    Logger.Info($"New {c}");
                 }
                 else
                 {
-                    Logger.Info($"Rejected socket for incorrect password {socket.RemoteEndPoint}");
                     SendResponse(socket, 0);
                     socket.Dispose();
+                    Logger.Info($"Rejected socket for incorrect password {socket.RemoteEndPoint}");
                 }
             }
             else if (rec == 1 && req[0] == 255)
