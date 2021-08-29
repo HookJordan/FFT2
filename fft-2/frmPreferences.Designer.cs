@@ -55,6 +55,7 @@
             this.radEncXOR = new System.Windows.Forms.RadioButton();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnConfirm = new System.Windows.Forms.Button();
+            this.radDES = new System.Windows.Forms.RadioButton();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -283,6 +284,7 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.radDES);
             this.groupBox3.Controls.Add(this.radEncAES);
             this.groupBox3.Controls.Add(this.radEncNone);
             this.groupBox3.Controls.Add(this.radEncRC4);
@@ -302,7 +304,6 @@
             this.radEncAES.Name = "radEncAES";
             this.radEncAES.Size = new System.Drawing.Size(66, 19);
             this.radEncAES.TabIndex = 0;
-            this.radEncAES.TabStop = true;
             this.radEncAES.Text = "AES 256";
             this.radEncAES.UseVisualStyleBackColor = true;
             // 
@@ -355,6 +356,16 @@
             this.btnConfirm.Text = "&Confirm";
             this.btnConfirm.UseVisualStyleBackColor = true;
             this.btnConfirm.Click += new System.EventHandler(this.btnConfirm_Click);
+            // 
+            // radDES
+            // 
+            this.radDES.AutoSize = true;
+            this.radDES.Location = new System.Drawing.Point(238, 22);
+            this.radDES.Name = "radDES";
+            this.radDES.Size = new System.Drawing.Size(45, 19);
+            this.radDES.TabIndex = 1;
+            this.radDES.Text = "DES";
+            this.radDES.UseVisualStyleBackColor = true;
             // 
             // frmPreferences
             // 
@@ -416,5 +427,6 @@
         private System.Windows.Forms.ContextMenuStrip mnuProtected;
         private System.Windows.Forms.ToolStripMenuItem mnuAdd;
         private System.Windows.Forms.ToolStripMenuItem mnuRemove;
+        private System.Windows.Forms.RadioButton radDES;
     }
 }
