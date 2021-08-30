@@ -60,13 +60,16 @@ namespace fft_2
         {
             if (DialogResult == DialogResult.OK)
             {
-                // TODO: Copy values into Program.Configuration
+                // Copy values into Program.Configuration
                 Program.Configuration.MaxBufferSize = (long)numBuffer.Value * 1024;
                 Program.Configuration.Port = (int)numPort.Value;
                 Program.Configuration.Password = txtPassword.Text;
                 Program.Configuration.CryptoServiceAlgorithm = GetCryptoServiceAlgorithm();
                 Program.Configuration.LogLevel = cbDebug.Checked ? Common.LogLevel.Debug : Common.LogLevel.Info;
                 Program.Configuration.ProtectedDirectories = lstProtected.Items.Cast<string>().ToList();
+
+                // Update the logger instance
+                Common.Logger.SetLogLevel(Program.Configuration.LogLevel);
 
                 if (Program.Configuration.StartWithWindows != cbWindows.Checked)
                 {
@@ -83,6 +86,7 @@ namespace fft_2
                     }
                 }
 
+                // Persist
                 Program.Configuration.Save("config.json", true);
             }
         }
@@ -94,7 +98,6 @@ namespace fft_2
 
         private void btnConfirm_Click(object sender, EventArgs e)
         {
-            // TODO: Validate
             DialogResult = DialogResult.OK;
         }
 
@@ -116,6 +119,8 @@ namespace fft_2
                 return CryptoServiceAlgorithm.RC4;
             else if (radEncXOR.Checked)
                 return CryptoServiceAlgorithm.XOR;
+            else if (radDES.Checked)
+                return CryptoServiceAlgorithm.DES;
             else
                 return CryptoServiceAlgorithm.Disabled;
         }
@@ -128,6 +133,8 @@ namespace fft_2
                 radEncRC4.Checked = true;
             else if (alg == CryptoServiceAlgorithm.XOR)
                 radEncXOR.Checked = true;
+            else if (alg == CryptoServiceAlgorithm.DES)
+                radDES.Checked = true;
             else
                 radEncNone.Checked = true;
         }

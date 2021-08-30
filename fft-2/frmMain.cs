@@ -14,9 +14,10 @@ namespace fft_2
     public partial class frmMain : Form
     {
         private frmBuddyList _frmBuddyList;
-        private Server Server;
+        private Server _server;
         private bool _closeToTray;
         private Updater _updater;
+        private frmConnectionLogger _logger;
 
         public frmMain()
         {
@@ -25,6 +26,7 @@ namespace fft_2
             _frmBuddyList = new frmBuddyList();
             _closeToTray = true;
             _updater = new Updater();
+            _logger = new frmConnectionLogger();
         }
 
         private void frmMain_Load(object sender, EventArgs e)
@@ -32,22 +34,21 @@ namespace fft_2
             Text = $"FFT - FastFileTransfer {Program.APP_VERSION}";
             Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 
-            // TODO: Load from config? 
+            // Setup UI
             ResetPassword();
             SetIpAddress();
-            txtMyPort.Text = "15056";
+            txtMyPort.Text = Program.Configuration.Port.ToString();
             txtPartnerIp.Text = "127.0.0.1";
             txtPartnerPassword.Text = "";
 
             // Create new instance of a server
-            Server = new Server(int.Parse(txtMyPort.Text), txtMyPassword.Text, Program.Configuration.Password);
-            Server.NewClient += Server_NewClient;
+            _server = new Server(int.Parse(txtMyPort.Text), txtMyPassword.Text, Program.Configuration.Password);
+            _server.NewClient += Server_NewClient;
 
             // Start running server
             try
-            {
-
-                Server.Listen();
+            { 
+                _server.Listen();
                 UpdateStatus("Awaiting new connections...");
             }
             catch (Exception ex)
@@ -61,6 +62,7 @@ namespace fft_2
             mnuPreferences.Click += MnuPreferences_Click;
             mnuBuddyList.Visible = false;
             mnuBuddyList.Click += MnuBuddyList_Click;
+            mnuLogger.Click += MnuLogger_Click;
 
             // Icon buttons
             mnuIconQuit.Click += MnuQuit_Click;
@@ -74,7 +76,13 @@ namespace fft_2
             mnuUpdates.Click += MnuUpdates_Click;
 
             // Initial launch update check
-            UpdateCheck(false); // TODO: SET TO FALSE
+            UpdateCheck(false);
+        }
+
+        private void MnuLogger_Click(object sender, EventArgs e)
+        {
+            _logger.Show();
+            _logger.BringToFront();
         }
 
         private void MnuIconCheckForUpdates_Click(object sender, EventArgs e)
@@ -117,15 +125,15 @@ namespace fft_2
             {
                 pref.ShowDialog();
 
-                if (Program.Configuration.Port != Server.Port)
+                if (Program.Configuration.Port != _server.Port)
                 {
-                    Server.SetPort(Program.Configuration.Port);
+                    _server.SetPort(Program.Configuration.Port);
                     txtMyPort.Text = Program.Configuration.Port.ToString();
                 }
 
-                if (Program.Configuration.Password != Server.Password)
+                if (Program.Configuration.Password != _server.Password)
                 {
-                    Server.SetPersonalPassword(Program.Configuration.Password);
+                    _server.SetPersonalPassword(Program.Configuration.Password);
                 }
             }
         }
@@ -134,6 +142,7 @@ namespace fft_2
         {
             _closeToTray = false;
             _frmBuddyList.Dispose();
+            _logger.Dispose();
 
             // TODO: If session in progress -- warn about ending session
             Application.Exit();
@@ -172,7 +181,7 @@ namespace fft_2
         {
             if (InvokeRequired)
             {
-                Invoke((MethodInvoker)delegate { UpdateStatus(status); });
+                Invoke((MethodInvoker)delegate { UpdateStatus(status); }); 
             }
             else
             {
@@ -206,9 +215,9 @@ namespace fft_2
             txtMyPassword.Text = password;
 
             // Update server configuration as well
-            if (Server != null && Server.Running)
+            if (_server != null && _server.Running)
             {
-                Server.SetPassword(password);
+                _server.SetPassword(password);
             }
         }
 
@@ -315,10 +324,9 @@ namespace fft_2
             // Determine is target version is > current version
             if (_updater.IsNewVersion(Program.APP_VERSION, update.version))
             {
-                // TODO: Downloader
                 if (MessageBox.Show($"A newer version of FastFileTransfer has been found. Would you like to download version: {update.version}?", "Checking For Updates", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    // TODO: SHOW GATE UNTIL DOWNLOAD COMPELTED
+                    // SHOW GATE UNTIL DOWNLOAD COMPELTED
                     string targetFile = System.IO.Path.Combine(Application.StartupPath, update.package.Replace("apps/", ""));
                     string message = $"Current Version: {Program.APP_VERSION}\nTarget Version: {update.version}\n\nDestination:\n{targetFile}";
 
@@ -334,6 +342,9 @@ namespace fft_2
                             }
 
                             dlg.CloseDialog();
+
+                            // TODO: It would be nice to extract and auto install the updates
+                            // However, we will need to write or utilize an installation wizard
                             MessageBox.Show($"The updated package has been downloaded to:\n\n{targetFile}\n\nPlease extract it to complete the update!", "Update Downloaded", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                     }

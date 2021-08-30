@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "fft-client": {
+      "commandName": "Project",
+      "commandLineArgs": "127.0.0.1:15055 https://jordanhook.com AES"
+    }
+  }
+}
