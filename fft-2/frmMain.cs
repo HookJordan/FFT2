@@ -63,6 +63,7 @@ namespace fft_2
             mnuBuddyList.Visible = false;
             mnuBuddyList.Click += MnuBuddyList_Click;
             mnuLogger.Click += MnuLogger_Click;
+            mnuBenchmark.Click += MnuBenchmark_Click;
 
             // Icon buttons
             mnuIconQuit.Click += MnuQuit_Click;
@@ -77,6 +78,14 @@ namespace fft_2
 
             // Initial launch update check
             UpdateCheck(false);
+        }
+
+        private void MnuBenchmark_Click(object sender, EventArgs e)
+        {
+            using (frmBenchmark bench = new frmBenchmark())
+            {
+                bench.ShowDialog();
+            }
         }
 
         private void MnuLogger_Click(object sender, EventArgs e)

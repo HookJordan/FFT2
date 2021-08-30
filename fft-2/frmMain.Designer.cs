@@ -65,6 +65,7 @@
             this.mnuIconPreferences = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuIconQuit = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuBenchmark = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -172,6 +173,7 @@
             this.fileToolStrip.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuBuddyList,
             this.mnuPreferences,
+            this.mnuBenchmark,
             this.mnuLogger,
             this.toolStripSeparator1,
             this.mnuQuit});
@@ -387,6 +389,12 @@
             this.mnuIconQuit.Size = new System.Drawing.Size(170, 22);
             this.mnuIconQuit.Text = "Quit";
             // 
+            // mnuBenchmark
+            // 
+            this.mnuBenchmark.Name = "mnuBenchmark";
+            this.mnuBenchmark.Size = new System.Drawing.Size(135, 22);
+            this.mnuBenchmark.Text = "Benchmark";
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -458,6 +466,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem mnuIconQuit;
         private System.Windows.Forms.ToolStripMenuItem mnuLogger;
+        private System.Windows.Forms.ToolStripMenuItem mnuBenchmark;
     }
 }
 
