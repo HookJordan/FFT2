@@ -8,7 +8,7 @@ namespace Common.Security.Cryptography
         AES,
         RC4,
         XOR,
-        DES
+        TripleDES
     }
 
     public class CryptoService
@@ -36,8 +36,8 @@ namespace Common.Security.Cryptography
                 case CryptoServiceAlgorithm.XOR:
                     XOR.Perform(ref input, key);
                     break;
-                case CryptoServiceAlgorithm.DES:
-                    input = DES.Encrypt(input, key);
+                case CryptoServiceAlgorithm.TripleDES:
+                    input = TripleDES.Encrypt(input, key);
                     break;
                 default: // No encryption
                     break;
@@ -59,8 +59,8 @@ namespace Common.Security.Cryptography
                 case CryptoServiceAlgorithm.XOR:
                     XOR.Perform(ref input, key);
                     break;
-                case CryptoServiceAlgorithm.DES:
-                    input = DES.Decrypt(input, key);
+                case CryptoServiceAlgorithm.TripleDES:
+                    input = TripleDES.Decrypt(input, key);
                     break;
                 default: // No encryption
                     break;

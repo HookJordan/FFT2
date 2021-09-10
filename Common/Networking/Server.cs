@@ -28,22 +28,12 @@ namespace Common.Networking
 
         public void SetPassword(string password)
         {
-            if (password.Length != 16)
-            {
-                password = Hashing.SHA(password);
-            }
-
-            Password = password;
+            Password = Hashing.SHA(password);
         }
 
         public void SetPersonalPassword(string password)
         {
-            if (password.Length != 16)
-            {
-                password = Hashing.SHA(password);
-            }
-
-            PersonalPassword = password;
+            PersonalPassword = Hashing.SHA(password);
         }
 
         public void Listen()

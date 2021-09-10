@@ -387,7 +387,7 @@ namespace fft_2
             _fileTransferManager = new FileTransferManager(client, Program.Configuration.MaxBufferSize);
             _fileTransferManager.UpdateTransfer += _fileTransferManager_UpdateTransfer;
             Text += $" - Encryption: {client.CryptoServiceAlgorithm}";
-            Show();
+            Visible = true;
         }
 
         private void FixProgressBars()
