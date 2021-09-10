@@ -1,4 +1,5 @@
-﻿using Common.Security.Cryptography;
+﻿using Common.Security;
+using Common.Security.Cryptography;
 using System;
 using System.IO;
 using System.Net;
@@ -89,7 +90,7 @@ namespace Common.Networking
                 Logger.Error("An error occured while establisting the following connection : " + ToString());
                 Logger.Debug(e.Message);
 
-                throw e;
+                throw;
             }
         }
 
@@ -97,7 +98,7 @@ namespace Common.Networking
         {
             // Build out packet information
             byte[] info = new byte[67];
-            byte[] pass = Encoding.ASCII.GetBytes(Password);
+            byte[] pass = Encoding.ASCII.GetBytes(Password); // Hash the password -- should never transfer in plain text
             pass.CopyTo(info, 3);
             info[0] = (byte)Protocol;
             info[1] = (byte)_cryptoService.Algorithm; // Encryption mode
@@ -203,6 +204,7 @@ namespace Common.Networking
             {
                 Logger.Error($"An error occured attempting to send a message to ${ToString()}");
                 Logger.Debug(e.Message);
+
                 Disconnect();
             }
         }

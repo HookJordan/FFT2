@@ -1,12 +1,8 @@
 ﻿using Common.IO;
 using Common.Security.Cryptography;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -32,6 +28,8 @@ namespace fft_2
             btnBenchmark.Enabled = false;
             cbEncryptionMode.Enabled = false;
             numBuffer.Enabled = false;
+
+
             RunBenchmarks();
         }
         
@@ -41,8 +39,8 @@ namespace fft_2
                 return CryptoServiceAlgorithm.AES;
             else if (cbEncryptionMode.Text == "XOR")
                 return CryptoServiceAlgorithm.XOR;
-            else if (cbEncryptionMode.Text == "DES")
-                return CryptoServiceAlgorithm.DES;
+            else if (cbEncryptionMode.Text == "TripleDES")
+                return CryptoServiceAlgorithm.TripleDES;
             else if (cbEncryptionMode.Text == "RC4")
                 return CryptoServiceAlgorithm.RC4;
             else
@@ -99,6 +97,8 @@ namespace fft_2
                     numBuffer.Enabled = true;
                     cbEncryptionMode.Enabled = true;
                 });
+
+                buffer = null;
             }).Start();
         }
 

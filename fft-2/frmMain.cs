@@ -264,7 +264,6 @@ namespace fft_2
                 client.Ready += Client_Ready;
 
                 frmFileExplorer frmFileExplorer = new frmFileExplorer(client);
-
                 try 
                 {
                     client.Connect(Program.Configuration.MaxBufferSize);
