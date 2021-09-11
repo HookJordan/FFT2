@@ -1,5 +1,4 @@
-﻿using Common.Security;
-using Common.Security.Cryptography;
+﻿using Common.Security.Cryptography;
 using System;
 using System.IO;
 using System.Net;
@@ -25,7 +24,7 @@ namespace Common.Networking
         public bool IsDisposed { get; private set; }
 
         private Socket _socket;
-        private long _bufferSize = 1024 * 1024; // Buffer size for packets (1MB)?
+        private long _bufferSize = 1024 * 1024; // Buffer size for packets (1MB default)
         private CryptoService _cryptoService;
 
         public Client(Protocol protocol, Socket socket, string password, CryptoServiceAlgorithm algorithm)

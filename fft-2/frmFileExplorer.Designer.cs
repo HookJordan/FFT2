@@ -46,6 +46,8 @@
             this.mnuFileMove = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuFileDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.mnuChecksum = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuFileCompress = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuDownload = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,8 +80,10 @@
             // 
             // txtNav
             // 
+            this.txtNav.BackColor = System.Drawing.Color.White;
             this.txtNav.Location = new System.Drawing.Point(74, 12);
             this.txtNav.Name = "txtNav";
+            this.txtNav.ReadOnly = true;
             this.txtNav.Size = new System.Drawing.Size(760, 23);
             this.txtNav.TabIndex = 1;
             // 
@@ -168,6 +172,8 @@
             this.mnuFileMove,
             this.mnuFileDelete,
             this.toolStripSeparator3,
+            this.mnuChecksum,
+            this.toolStripSeparator5,
             this.mnuFileCompress,
             this.toolStripSeparator4,
             this.mnuDownload,
@@ -179,41 +185,52 @@
             // mnuFileMove
             // 
             this.mnuFileMove.Name = "mnuFileMove";
-            this.mnuFileMove.Size = new System.Drawing.Size(128, 22);
+            this.mnuFileMove.Size = new System.Drawing.Size(130, 22);
             this.mnuFileMove.Text = "Move";
             // 
             // mnuFileDelete
             // 
             this.mnuFileDelete.Name = "mnuFileDelete";
-            this.mnuFileDelete.Size = new System.Drawing.Size(128, 22);
+            this.mnuFileDelete.Size = new System.Drawing.Size(130, 22);
             this.mnuFileDelete.Text = "Delete";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(125, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(127, 6);
+            // 
+            // mnuChecksum
+            // 
+            this.mnuChecksum.Name = "mnuChecksum";
+            this.mnuChecksum.Size = new System.Drawing.Size(130, 22);
+            this.mnuChecksum.Text = "Checksum";
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(127, 6);
             // 
             // mnuFileCompress
             // 
             this.mnuFileCompress.Name = "mnuFileCompress";
-            this.mnuFileCompress.Size = new System.Drawing.Size(128, 22);
+            this.mnuFileCompress.Size = new System.Drawing.Size(130, 22);
             this.mnuFileCompress.Text = "Compress";
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(125, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(127, 6);
             // 
             // mnuDownload
             // 
             this.mnuDownload.Name = "mnuDownload";
-            this.mnuDownload.Size = new System.Drawing.Size(128, 22);
+            this.mnuDownload.Size = new System.Drawing.Size(130, 22);
             this.mnuDownload.Text = "Download";
             // 
             // mnuUpload
             // 
             this.mnuUpload.Name = "mnuUpload";
-            this.mnuUpload.Size = new System.Drawing.Size(128, 22);
+            this.mnuUpload.Size = new System.Drawing.Size(130, 22);
             this.mnuUpload.Text = "Upload";
             // 
             // lstIcons
@@ -364,5 +381,7 @@
         private System.Windows.Forms.ContextMenuStrip mnuTransfers;
         private System.Windows.Forms.ToolStripMenuItem mnuTransferPause;
         private System.Windows.Forms.ToolStripMenuItem mnuTransferCancel;
+        private System.Windows.Forms.ToolStripMenuItem mnuChecksum;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
     }
 }

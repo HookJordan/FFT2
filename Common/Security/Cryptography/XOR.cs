@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Common.Security.Cryptography
+﻿namespace Common.Security.Cryptography
 {
     public class XOR
     {

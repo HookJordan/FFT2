@@ -9,6 +9,7 @@
 
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <OutDir>$(SolutionDir)/../bin/App</OutDir>
+    <StartupObject>fft_2.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

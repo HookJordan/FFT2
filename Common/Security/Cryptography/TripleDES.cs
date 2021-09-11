@@ -7,7 +7,7 @@ namespace Common.Security.Cryptography
 {
     public class TripleDES
     {
-        private static byte[] SALT = Encoding.ASCII.GetBytes("FFT2 - FastFileTransfer2 - DES SALT");
+        private static readonly byte[] SALT = Encoding.ASCII.GetBytes("FFT2 - FastFileTransfer2 - DES SALT");
 
         public static byte[] Encrypt(byte[] data, byte[] key)
         {

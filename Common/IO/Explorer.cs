@@ -1,4 +1,5 @@
 ﻿using Common.Networking;
+using Common.Security;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,8 +11,8 @@ namespace Common.IO
 {
     public class Explorer
     {
-        private Client _client;
-        private string[] _protectedDirectories;
+        private readonly Client _client;
+        private readonly string[] _protectedDirectories;
         private static char directorySplit;
         private static char oppositeSplit;
         public Explorer(Client client, string[] protectedDirectories)
@@ -67,13 +68,17 @@ namespace Common.IO
                     case PacketHeader.FileMove:
                         MoveFile(packet);
                         break;
+                    case PacketHeader.Checksum:
+                        Checksum(packet);
+                        break;
                     default: // Unhandled packet
                         break;
                 }
 
                 // For generic actions, respond with same packet to confirm success
-                if (packet.PacketHeader != PacketHeader.DirectoryGet
-                    && packet.PacketHeader != PacketHeader.DrivesGet)
+                if (packet.PacketHeader != PacketHeader.DirectoryGet && 
+                    packet.PacketHeader != PacketHeader.DrivesGet && 
+                    packet.PacketHeader != PacketHeader.Checksum)
                 {
                     client.Transmit(packet);
                 }
@@ -82,6 +87,23 @@ namespace Common.IO
             {
                 Logger.Error(ex.Message);
                 SendException(ex);
+            }
+        }
+
+        private void Checksum(Packet packet)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (BinaryWriter bw = new BinaryWriter(ms))
+                {
+                    using (FileStream fs = new FileStream(packet.PayloadAsString(), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        bw.Write(packet.PayloadAsString());
+                        bw.Write(Hashing.SHA(fs));
+                    }
+                }
+
+                _client.Transmit(new Packet(PacketHeader.Checksum, ms.ToArray()));
             }
         }
 
@@ -125,7 +147,7 @@ namespace Common.IO
 
         private void MoveDirectory(Packet packet)
         {
-            string[] data = listFromArray(packet.Payload);
+            string[] data = ListFromArray(packet.Payload);
 
             if (!IsProtected(data[0]) && !IsProtected(data[1]))
             {
@@ -163,7 +185,7 @@ namespace Common.IO
 
                     if (File.Exists($"{fullPath}.zip"))
                         File.Delete($"{fullPath}.zip");
-                    throw ex;
+                    throw;
                 }
             }
         }
@@ -181,7 +203,7 @@ namespace Common.IO
 
         private void MoveFile(Packet packet)
         {
-            string[] data = listFromArray(packet.Payload);
+            string[] data = ListFromArray(packet.Payload);
 
             if (!IsProtected(data[0]) && !IsProtected(data[1]))
             {
@@ -214,7 +236,7 @@ namespace Common.IO
 
                     if (File.Exists($"{fullPath}.zip"))
                         File.Delete($"{fullPath}.zip");
-                    throw ex;
+                    throw;
                 }
             }
         }
@@ -325,7 +347,7 @@ namespace Common.IO
                             }
                         }
 
-                        bw.Write(temp.Count());
+                        bw.Write(temp.Count);
                         foreach (string[] t in temp)
                         {
                             for (int i = 0; i < t.Length; i++)
@@ -359,7 +381,7 @@ namespace Common.IO
                             }
                         }
 
-                        bw.Write(temp.Count());
+                        bw.Write(temp.Count);
                         foreach (string[] t in temp)
                         {
                             for (int i = 0; i < t.Length; i++)
@@ -377,7 +399,7 @@ namespace Common.IO
             }
         }
 
-        public string[] listFromArray(byte[] data)
+        public string[] ListFromArray(byte[] data)
         {
             using (MemoryStream ms = new MemoryStream(data))
             {

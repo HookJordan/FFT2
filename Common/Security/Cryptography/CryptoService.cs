@@ -14,7 +14,7 @@ namespace Common.Security.Cryptography
     public class CryptoService
     {
         public CryptoServiceAlgorithm Algorithm { get; private set; }
-        private byte[] key;
+        private readonly byte[] key;
 
         public CryptoService(CryptoServiceAlgorithm algorithm, string password)
         {

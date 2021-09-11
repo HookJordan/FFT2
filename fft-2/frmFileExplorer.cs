@@ -13,7 +13,8 @@ namespace fft_2
     {
         private bool _drives = true;
         private string currentPath = "";
-        private Client _client, _transfer;
+        private readonly Client _client;
+        private Client _transfer;
         private FileTransferManager _fileTransferManager;
 
         public frmFileExplorer(Client client)
@@ -144,6 +145,11 @@ namespace fft_2
                                 lstFiles.Enabled = false;
                                 client.Transmit(new Packet(PacketHeader.DirectoryGet, currentPath));
                                 break;
+                            case PacketHeader.Checksum:
+                                string p = br.ReadString(), h = br.ReadString();
+
+                                MessageBox.Show($"File Path:\n{p}\n\nSHA256:\n{h}", "SHA256 Checksum", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                break;
                             case PacketHeader.Exception:
                                 MessageBox.Show(packet.PayloadAsString(), "An error occured", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 lstFiles.Enabled = true;
@@ -199,6 +205,7 @@ namespace fft_2
             mnuFileCompress.Click += MnuFileCompress_Click;
             mnuFileDelete.Click += MnuFileDelete_Click;
             mnuFileMove.Click += MnuFileMove_Click;
+            mnuChecksum.Click += MnuChecksum_Click;
 
             // Transfer Buttons
             mnuDownload.Click += MnuDownload_Click;
@@ -213,6 +220,13 @@ namespace fft_2
             _transfer = new Client(Protocol.FFTST, _client.IP, _client.Port, _client.Password, _client.CryptoServiceAlgorithm);
             _transfer.Ready += _transfer_Ready;
             _transfer.Connect(Program.Configuration.MaxBufferSize);
+        }
+
+        private void MnuChecksum_Click(object sender, EventArgs e)
+        {
+            var item = lstFiles.SelectedItems[0];
+
+            _client.Transmit(new Packet(PacketHeader.Checksum, item.SubItems[1].Text));
         }
 
         private void LstFiles_ColumnWidthChanged(object sender, ColumnWidthChangedEventArgs e)
@@ -649,6 +663,7 @@ namespace fft_2
                     mnuFileCompress.Enabled = false;
                     mnuDownload.Enabled = false;
                     mnuUpload.Enabled = true;
+                    mnuChecksum.Enabled = false;
                 }
                 else
                 {
@@ -679,6 +694,7 @@ namespace fft_2
 
                         mnuUpload.Enabled = true;
                         mnuDownload.Enabled = true;
+                        mnuChecksum.Enabled = true;
                     }
                 }
             }

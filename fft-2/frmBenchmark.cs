@@ -51,48 +51,46 @@ namespace fft_2
         {
             int bufferSize = (int)(1024 * numBuffer.Value);
             CryptoServiceAlgorithm algorithm = GetAlgorithm();
+
             new Thread(() =>
             {
                 CryptoService cryptoService = new CryptoService(algorithm, Guid.NewGuid().ToString());
-                Random randomizer = new Random();
+                Random random = new Random();
                 Stopwatch sw = new Stopwatch();
                 byte[] buffer = new byte[bufferSize];
                 long dataProcessed = 0;
+                long duration = 3; // 1 second
 
-                while (sw.ElapsedMilliseconds < 1000)
+                random.NextBytes(buffer);
+
+                sw.Start();
+                while (sw.ElapsedMilliseconds < duration * 1000)
                 {
-                    randomizer.NextBytes(buffer);
-
-                    sw.Start();
-                    buffer = cryptoService.Encrypt(buffer);
-                    sw.Stop();
-
+                    cryptoService.Encrypt(buffer);
                     dataProcessed += buffer.Length;
                 }
+                sw.Stop();
+
+                buffer = cryptoService.Encrypt(buffer);
 
                 Invoke((MethodInvoker)delegate
                 {
-                    lblEncryption.Text = $"Encryption: {Explorer.GetSize((double)dataProcessed)}/S";
+                    lblEncryption.Text = $"Encryption: {Explorer.GetSize((double)dataProcessed / duration)}/S";
                 });
 
-                sw.Reset();
-                dataProcessed = 0;
+                sw.Restart();
 
-                while (sw.ElapsedMilliseconds < 1000)
+                while(sw.ElapsedMilliseconds < duration * 1000)
                 {
-                    randomizer.NextBytes(buffer);
-                    buffer = cryptoService.Encrypt(buffer);
-
-                    sw.Start();
-                    buffer = cryptoService.Decrypt(buffer);
-                    sw.Stop();
-
+                    cryptoService.Decrypt(buffer);
                     dataProcessed += buffer.Length;
                 }
 
+                sw.Stop();
+
                 Invoke((MethodInvoker)delegate
                 {
-                    lblDec.Text = $"Decryption: {Explorer.GetSize((double)dataProcessed)}/S";
+                    lblDec.Text = $"Decryption: {Explorer.GetSize((double)dataProcessed / duration)}/S";
                     btnBenchmark.Enabled = true;
                     numBuffer.Enabled = true;
                     cbEncryptionMode.Enabled = true;
@@ -101,6 +99,5 @@ namespace fft_2
                 buffer = null;
             }).Start();
         }
-
     }
 }

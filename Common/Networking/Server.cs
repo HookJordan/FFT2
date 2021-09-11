@@ -88,7 +88,7 @@ namespace Common.Networking
         {
             // 1 byte protocol 
             // 1 byte encryption mode
-            // 1 byte compression mode
+            // 1 byte compression mode (legacy)
             // 64 bytes sha256 hash password
             // = 67 bytes
             byte[] req = new byte[67];
