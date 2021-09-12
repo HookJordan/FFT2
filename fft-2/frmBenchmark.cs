@@ -1,12 +1,8 @@
 ﻿using Common.IO;
 using Common.Security.Cryptography;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -32,6 +28,8 @@ namespace fft_2
             btnBenchmark.Enabled = false;
             cbEncryptionMode.Enabled = false;
             numBuffer.Enabled = false;
+
+
             RunBenchmarks();
         }
         
@@ -41,8 +39,8 @@ namespace fft_2
                 return CryptoServiceAlgorithm.AES;
             else if (cbEncryptionMode.Text == "XOR")
                 return CryptoServiceAlgorithm.XOR;
-            else if (cbEncryptionMode.Text == "DES")
-                return CryptoServiceAlgorithm.DES;
+            else if (cbEncryptionMode.Text == "TripleDES")
+                return CryptoServiceAlgorithm.TripleDES;
             else if (cbEncryptionMode.Text == "RC4")
                 return CryptoServiceAlgorithm.RC4;
             else
@@ -53,54 +51,53 @@ namespace fft_2
         {
             int bufferSize = (int)(1024 * numBuffer.Value);
             CryptoServiceAlgorithm algorithm = GetAlgorithm();
+
             new Thread(() =>
             {
                 CryptoService cryptoService = new CryptoService(algorithm, Guid.NewGuid().ToString());
-                Random randomizer = new Random();
+                Random random = new Random();
                 Stopwatch sw = new Stopwatch();
                 byte[] buffer = new byte[bufferSize];
                 long dataProcessed = 0;
+                long duration = 3; // 1 second
 
-                while (sw.ElapsedMilliseconds < 1000)
+                random.NextBytes(buffer);
+
+                sw.Start();
+                while (sw.ElapsedMilliseconds < duration * 1000)
                 {
-                    randomizer.NextBytes(buffer);
-
-                    sw.Start();
-                    buffer = cryptoService.Encrypt(buffer);
-                    sw.Stop();
-
+                    cryptoService.Encrypt(buffer);
                     dataProcessed += buffer.Length;
                 }
+                sw.Stop();
+
+                buffer = cryptoService.Encrypt(buffer);
 
                 Invoke((MethodInvoker)delegate
                 {
-                    lblEncryption.Text = $"Encryption: {Explorer.GetSize((double)dataProcessed)}/S";
+                    lblEncryption.Text = $"Encryption: {Explorer.GetSize((double)dataProcessed / duration)}/S";
                 });
 
-                sw.Reset();
-                dataProcessed = 0;
+                sw.Restart();
 
-                while (sw.ElapsedMilliseconds < 1000)
+                while(sw.ElapsedMilliseconds < duration * 1000)
                 {
-                    randomizer.NextBytes(buffer);
-                    buffer = cryptoService.Encrypt(buffer);
-
-                    sw.Start();
-                    buffer = cryptoService.Decrypt(buffer);
-                    sw.Stop();
-
+                    cryptoService.Decrypt(buffer);
                     dataProcessed += buffer.Length;
                 }
 
+                sw.Stop();
+
                 Invoke((MethodInvoker)delegate
                 {
-                    lblDec.Text = $"Decryption: {Explorer.GetSize((double)dataProcessed)}/S";
+                    lblDec.Text = $"Decryption: {Explorer.GetSize((double)dataProcessed / duration)}/S";
                     btnBenchmark.Enabled = true;
                     numBuffer.Enabled = true;
                     cbEncryptionMode.Enabled = true;
                 });
+
+                buffer = null;
             }).Start();
         }
-
     }
 }

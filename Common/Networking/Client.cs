@@ -24,7 +24,7 @@ namespace Common.Networking
         public bool IsDisposed { get; private set; }
 
         private Socket _socket;
-        private long _bufferSize = 1024 * 1024; // Buffer size for packets (1MB)?
+        private long _bufferSize = 1024 * 1024; // Buffer size for packets (1MB default)
         private CryptoService _cryptoService;
 
         public Client(Protocol protocol, Socket socket, string password, CryptoServiceAlgorithm algorithm)
@@ -89,7 +89,7 @@ namespace Common.Networking
                 Logger.Error("An error occured while establisting the following connection : " + ToString());
                 Logger.Debug(e.Message);
 
-                throw e;
+                throw;
             }
         }
 
@@ -97,7 +97,7 @@ namespace Common.Networking
         {
             // Build out packet information
             byte[] info = new byte[67];
-            byte[] pass = Encoding.ASCII.GetBytes(Password);
+            byte[] pass = Encoding.ASCII.GetBytes(Password); // Hash the password -- should never transfer in plain text
             pass.CopyTo(info, 3);
             info[0] = (byte)Protocol;
             info[1] = (byte)_cryptoService.Algorithm; // Encryption mode
@@ -203,6 +203,7 @@ namespace Common.Networking
             {
                 Logger.Error($"An error occured attempting to send a message to ${ToString()}");
                 Logger.Debug(e.Message);
+
                 Disconnect();
             }
         }

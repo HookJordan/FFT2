@@ -31,8 +31,8 @@ namespace fft_2.Installation
             psi.RedirectStandardInput = true;
             psi.RedirectStandardOutput = true;
             psi.UseShellExecute = false;
-            psi.CreateNoWindow = true;
-            psi.WindowStyle = ProcessWindowStyle.Hidden;
+            // psi.CreateNoWindow = true;
+            // psi.WindowStyle = ProcessWindowStyle.Hidden;
 
             // Start the process
             Process p = Process.Start(psi);

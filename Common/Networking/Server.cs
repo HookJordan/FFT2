@@ -28,22 +28,12 @@ namespace Common.Networking
 
         public void SetPassword(string password)
         {
-            if (password.Length != 16)
-            {
-                password = Hashing.SHA(password);
-            }
-
-            Password = password;
+            Password = Hashing.SHA(password);
         }
 
         public void SetPersonalPassword(string password)
         {
-            if (password.Length != 16)
-            {
-                password = Hashing.SHA(password);
-            }
-
-            PersonalPassword = password;
+            PersonalPassword = Hashing.SHA(password);
         }
 
         public void Listen()
@@ -98,7 +88,7 @@ namespace Common.Networking
         {
             // 1 byte protocol 
             // 1 byte encryption mode
-            // 1 byte compression mode
+            // 1 byte compression mode (legacy)
             // 64 bytes sha256 hash password
             // = 67 bytes
             byte[] req = new byte[67];

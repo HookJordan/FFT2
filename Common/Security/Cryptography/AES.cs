@@ -6,7 +6,7 @@ namespace Common.Security.Cryptography
 {
     public class AES
     {
-        private static byte[] SALT = Encoding.ASCII.GetBytes("FFT2 - FastFileTransfer2 - AES SALT");
+        private static readonly byte[] SALT = Encoding.ASCII.GetBytes("FFT2 - FastFileTransfer2 - AES SALT");
         public static byte[] Encrypt(byte[] input, byte[] password)
         {
             byte[] encrypted = null;

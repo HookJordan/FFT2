@@ -102,8 +102,8 @@ namespace fft_2
             this.cbEncryptionMode.FormattingEnabled = true;
             this.cbEncryptionMode.Items.AddRange(new object[] {
             "AES",
-            "DES",
             "RC4",
+            "TripleDES",
             "XOR"});
             this.cbEncryptionMode.Location = new System.Drawing.Point(93, 22);
             this.cbEncryptionMode.Name = "cbEncryptionMode";

@@ -16,8 +16,8 @@ namespace Common
         public LogLevel LogLevel { get; private set; }
         public bool ConsoleLogging { get; private set; }
 
-        private object _logLock;
-        private StreamWriter _streamWriter;
+        private readonly object _logLock;
+        private readonly StreamWriter _streamWriter;
         private bool _disposed;
 
         // Singleton
