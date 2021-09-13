@@ -7,7 +7,7 @@ Shared modules between client and server applications
 ### FFT2 
 Windows Form Application (Compiled with .NET Core) to replace existing FFT user interface.
 
-![main](https://user-images.githubusercontent.com/18728027/131284275-c80f4f97-0083-4689-a1d1-ebcf7e016059.PNG)
+![main](https://jordanhook.com/img/c0df1b51de9a7f178e84172936d74022.png)
 
 ![preferences](https://user-images.githubusercontent.com/18728027/131284276-2e5eaa7c-2180-4135-8305-7db19de20692.PNG)
 
