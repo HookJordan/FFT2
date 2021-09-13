@@ -16,7 +16,7 @@ namespace Common
         {
             FileTransfer = new Dictionary<string, FileTransfer>();
             _transferSocket = transferSocket;
-            _bufferSize = 1024 * 1024; // 1 MB 
+            _bufferSize = maxBufferSize; // 1 MB 
             _transferSocket.PacketReceived += _transferSocket_PacketReceived;
         }
 

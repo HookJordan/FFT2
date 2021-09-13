@@ -49,13 +49,13 @@
             this.mnuAdd = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuRemove = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.radDES = new System.Windows.Forms.RadioButton();
             this.radEncAES = new System.Windows.Forms.RadioButton();
             this.radEncNone = new System.Windows.Forms.RadioButton();
             this.radEncRC4 = new System.Windows.Forms.RadioButton();
             this.radEncXOR = new System.Windows.Forms.RadioButton();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnConfirm = new System.Windows.Forms.Button();
-            this.radDES = new System.Windows.Forms.RadioButton();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -296,6 +296,16 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Encryption Algorithm";
             // 
+            // radDES
+            // 
+            this.radDES.AutoSize = true;
+            this.radDES.Location = new System.Drawing.Point(238, 22);
+            this.radDES.Name = "radDES";
+            this.radDES.Size = new System.Drawing.Size(56, 19);
+            this.radDES.TabIndex = 1;
+            this.radDES.Text = "3-DES";
+            this.radDES.UseVisualStyleBackColor = true;
+            // 
             // radEncAES
             // 
             this.radEncAES.AutoSize = true;
@@ -304,6 +314,7 @@
             this.radEncAES.Name = "radEncAES";
             this.radEncAES.Size = new System.Drawing.Size(66, 19);
             this.radEncAES.TabIndex = 0;
+            this.radEncAES.TabStop = true;
             this.radEncAES.Text = "AES 256";
             this.radEncAES.UseVisualStyleBackColor = true;
             // 
@@ -356,16 +367,6 @@
             this.btnConfirm.Text = "&Confirm";
             this.btnConfirm.UseVisualStyleBackColor = true;
             this.btnConfirm.Click += new System.EventHandler(this.btnConfirm_Click);
-            // 
-            // radDES
-            // 
-            this.radDES.AutoSize = true;
-            this.radDES.Location = new System.Drawing.Point(238, 22);
-            this.radDES.Name = "radDES";
-            this.radDES.Size = new System.Drawing.Size(45, 19);
-            this.radDES.TabIndex = 1;
-            this.radDES.Text = "DES";
-            this.radDES.UseVisualStyleBackColor = true;
             // 
             // frmPreferences
             // 

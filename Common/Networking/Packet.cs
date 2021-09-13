@@ -23,6 +23,7 @@ namespace Common.Networking
         FileTransferChunk,
         FileTransferCancel,
         FileTransferCancelConfirm,
+        Checksum,
         Exception
     }
 
@@ -72,6 +73,11 @@ namespace Common.Networking
         public void Dispose()
         {
             Payload = null;
+        }
+
+        public override string ToString()
+        {
+            return $"Packet={{Header={PacketHeader}, Payload='{PayloadAsString()}'}}";
         }
     }
 }

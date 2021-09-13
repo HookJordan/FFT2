@@ -120,7 +120,7 @@ namespace fft_2
             else if (radEncXOR.Checked)
                 return CryptoServiceAlgorithm.XOR;
             else if (radDES.Checked)
-                return CryptoServiceAlgorithm.DES;
+                return CryptoServiceAlgorithm.TripleDES;
             else
                 return CryptoServiceAlgorithm.Disabled;
         }
@@ -133,7 +133,7 @@ namespace fft_2
                 radEncRC4.Checked = true;
             else if (alg == CryptoServiceAlgorithm.XOR)
                 radEncXOR.Checked = true;
-            else if (alg == CryptoServiceAlgorithm.DES)
+            else if (alg == CryptoServiceAlgorithm.TripleDES)
                 radDES.Checked = true;
             else
                 radEncNone.Checked = true;

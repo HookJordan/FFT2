@@ -35,6 +35,7 @@ namespace Common.IO
 
             TransferId = Guid.NewGuid().ToString();
             _fileStream = new FileStream(Explorer.FixPath(LocalFilePath), FileMode.Open, FileAccess.Read, FileShare.Read);
+            _fileStream.Seek(0, SeekOrigin.Begin);
             FileLength = _fileStream.Length;
             _fullLength = FileLength;
             _buffer = new byte[bufferSize];

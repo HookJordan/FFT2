@@ -13,11 +13,11 @@ namespace fft_2
 {
     public partial class frmMain : Form
     {
-        private frmBuddyList _frmBuddyList;
         private Server _server;
         private bool _closeToTray;
-        private Updater _updater;
-        private frmConnectionLogger _logger;
+        private readonly Updater _updater;
+        private readonly frmConnectionLogger _logger;
+        private readonly frmBuddyList _frmBuddyList;
 
         public frmMain()
         {
@@ -264,7 +264,6 @@ namespace fft_2
                 client.Ready += Client_Ready;
 
                 frmFileExplorer frmFileExplorer = new frmFileExplorer(client);
-
                 try 
                 {
                     client.Connect(Program.Configuration.MaxBufferSize);
